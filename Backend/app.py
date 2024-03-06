@@ -153,3 +153,33 @@ def Update_test(id):
 
     return test
 
+@app.post('/upload/{topic_id}')
+async def handle_data(request: Request, topic_id):
+    data = await request.json()
+
+    questions = []
+    for question_data in data:
+        print(question_data)
+        question = {
+            'statement': question_data[1],
+            'option_a': question_data[2],
+            'option_b': question_data[3],
+            'option_c': question_data[4],
+            'option_d': question_data[5],
+            'answer': question_data[6],
+            'answer_uri': 'None',
+            'explanation': question_data[7],
+            'difficulty': 'Level 2',
+            'topic_id': topic_id
+
+        }
+        questions.append(Questions(**question))
+
+    for question in questions:
+        db.session.add(question)
+        db.session.commit()
+
+    return {'message': questions}
+
+# def save_question_to_db(question: Questions):
+#     return -1
