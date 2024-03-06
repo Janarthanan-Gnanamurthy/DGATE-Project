@@ -41,8 +41,13 @@ const router = createRouter({
       path:'/result',
       name:'result',
       component: () => import('../views/ResultView.vue')
+    },
+    {
+      path:'/upload',
+      name:'upload',
+      component: () => import('../views/UploadView.vue')
     }
-  ],
+  ]
 })
 
 export default router
