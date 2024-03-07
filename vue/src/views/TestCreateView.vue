@@ -1,6 +1,10 @@
 <template>
   <div class="p-10">
     <h2 class="text-3xl mb-5">Create Test</h2>
+    <div>
+      <label for="">Enter a Name for the Test:</label>
+      <input type="text" v-model="testName" placeholder="Enter Test name">
+    </div>
     <div class="text-2xl">
       <label for="course-select">Select Course:</label>
       <select id="course-select" v-model="selectedCourse" @change="fetchTopics">
@@ -20,6 +24,7 @@
         <thead>
           <tr>
             <th>Select</th>
+            <th>Q.ID</th>
             <th>Question</th>
           </tr>
         </thead>
@@ -28,11 +33,12 @@
             <td>
               <input type="checkbox" v-model="selectedQuestions" :value="question.id" />
             </td>
-            <td>{{ question.text }}</td>
+            <td>{{ question.id }}</td>
+            <td>{{ question.statement }}</td>
           </tr>
         </tbody>
       </table>
-      <button @click="createTest">Create Test</button>
+      <button @click="createTest" class="btn btn-primary">Create Test</button>
     </div>
   </div>
 </template>
@@ -44,6 +50,7 @@ export default {
   name: 'CreateTest',
   data() {
     return {
+      testName: '',
       selectedCourse: '',
       selectedTopic: '',
       selectedQuestions: [],
@@ -76,50 +83,62 @@ export default {
         this.questions = [];
       }
     },
-    fetchQuestions() {
+    async fetchQuestions() {
+      this.selectedQuestions =[];
       if (this.selectedTopic) {
-        // Fetch questions for the selected topic from the server
-        // and update the `questions` data property
-        // Example implementation:
-        this.questions = [
-          { id: 1, text: 'Question 1' },
-          { id: 2, text: 'Question 2' },
-          { id: 3, text: 'Question 3' },
-        ];
+        try{
+				  const response = await fetch(`http://localhost:8000/select-questions/${this.selectedTopic}`)
+				if (!response.ok){
+					throw new Error(`HTTP error! Status: ${response.status}`)
+				}
+				const data = await response.json();
+        this.questions = data
+
+        }catch (error) {
+          console.error('Error fetching questions:', error);
+          alert('Error fetching questions. Please try again.');
+        }
       } else {
         this.questions = [];
       }
     },
-    // createTest() {
-    //   // Send the selected course, topic, and questions to the server
-    //   // Example implementation:
-    //   const testData = {
-    //     courseId: this.selectedCourse,
-    //     topicId: this.selectedTopic,
-    //     questionIds: this.selectedQuestions,
-    //   };
+    createTest() {
+      // Send the selected course, topic, and questions to the server
+      // Example implementation:
+      const testData = {
+        name: this.testName,
+        topic_id: this.selectedTopic,
+        question_ids: this.selectedQuestions,
+      };
 
-    //   fetch('/api/tests', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(testData),
-    //   })
-    //     .then((response) => {
-    //       if (response.ok) {
-    //         // Handle successful test creation
-    //         console.log('Test created successfully');
-    //         // You can navigate to a different page or show a success message here
-    //       } else {
-    //         // Handle error
-    //         console.error('Error creating test');
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       console.error('Error creating test:', error);
-    //     });
-    // },
+      fetch('http://localhost:8000/test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(testData),
+      })
+        .then((response) => {
+          if (response.ok) {
+            // Handle successful test creation
+            this.testName = '',
+            this.selectedCourse='',
+            this.selectedTopic = '',
+            this.selectedQuestions= [],
+            this.topics= [],
+            this.questions= []
+            console.log('Test created successfully');
+            alert("Test created successfully")
+            // You can navigate to a different page or show a success message here
+          } else {
+            // Handle error
+            console.error('Error creating test');
+          }
+        })
+        .catch((error) => {
+          console.error('Error creating test:', error);
+        });
+    },
   },
 };
 </script>

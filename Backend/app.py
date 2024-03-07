@@ -65,7 +65,7 @@ def get_topic(topic_id: int):
         raise HTTPException(status_code=404, detail="Topic not found")
     return topic
 
-@app.post("/select-questions/{topic_id}", response_model=List[SelectQuestions])
+@app.get("/select-questions/{topic_id}", response_model=List[SelectQuestions])
 def create_question(topic_id):
     db_questions = db.session.query(Questions).filter(Questions.topic_id == topic_id).all()
 
