@@ -35,14 +35,14 @@ class Topics(BaseModel):
 class Questions(BaseModel):
     id:int
     statement: str
-    description: str
-    question_uri: str
-    option_a: str
-    option_b: str
-    option_c: str
-    option_d: str
+    description: Optional[str] = None
+    question_uri: Optional[str] = None
+    option_a: Optional[str] = None
+    option_b: Optional[str] = None
+    option_c: Optional[str] = None
+    option_d: Optional[str] = None
     answer: str
-    answer_uri: str
+    answer_uri: Optional[str] = None
     explanation: str
     difficulty: str
 
@@ -54,7 +54,7 @@ class Questions(BaseModel):
 class ResultsCreate(BaseModel):
     user_id: int
     test_id: int
-    score: int
+    score: float
     selected_options: dict
     metrics: Optional[dict] = None
 
