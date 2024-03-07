@@ -7,6 +7,7 @@
     </div>
     <div class="text-2xl">
       <label for="course-select">Select Course:</label>
+
       <select id="course-select" v-model="selectedCourse" @change="fetchTopics">
         <option value="">Select Course</option>
         <option v-for="course in courses" :key="course.id" :value="course.id">{{ course.title}}</option>
@@ -14,6 +15,7 @@
     </div>
     <div v-if="topics.length > 0">
       <label for="topic-select">Select Topic:</label>
+      {{ selectedTopic }}
       <select id="topic-select" v-model="selectedTopic" @change="fetchQuestions">
         <option value="">Select Topic</option>
         <option v-for="topic in topics" :key="topic.id" :value="topic.id">{{ topic.title }}</option>

@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from typing import List
 
-from schema import Course as SchemaCourse,CourseResponse , Topics as SchemaTopics, Questions as SchemaQuestions, CourseWithTopics, TopicsWithTests, ResultsCreate, ResultsResponse, ResultsList,UserCreate, UserResponse, TestCreate, TestResponse, SelectQuestions
+from schema import Course as SchemaCourse,CourseResponse , Topics as SchemaTopics, Questions as SchemaQuestions, CourseWithTopics, TopicsWithTests, TopicResponse,TopicCreate, ResultsCreate, ResultsResponse, ResultsList,UserCreate, UserResponse, TestCreate, TestResponse, SelectQuestions
 from models import Course, Topics, Questions, Results, User, Test
 
 import os
@@ -51,8 +51,8 @@ async def get_courses():
     courses = db.session.query(Course).all()
     return courses
 
-@app.post("/topics", response_model=SchemaTopics)
-def create_topic(topic: SchemaTopics):
+@app.post("/topics" , response_model=TopicResponse)
+def create_topic(topic: TopicCreate):
     db_topic = Topics(title=topic.title, course_id=topic.course_id)
     db.session.add(db_topic)
     db.session.commit()
@@ -158,7 +158,6 @@ async def handle_data(request: Request, topic_id):
 
     questions = []
     for question_data in data:
-        print(question_data)
         question = {
             'statement': question_data[1],
             'option_a': question_data[2],
