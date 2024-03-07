@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from typing import List
 
-from schema import Course as SchemaCourse,CourseResponse , Topics as SchemaTopics, Questions as SchemaQuestions, CourseWithTopics, TopicsWithTests, ResultsCreate, ResultsResponse, ResultsList,UserCreate, UserResponse, TestCreate, TestResponse
+from schema import Course as SchemaCourse,CourseResponse , Topics as SchemaTopics, Questions as SchemaQuestions, CourseWithTopics, TopicsWithTests, ResultsCreate, ResultsResponse, ResultsList,UserCreate, UserResponse, TestCreate, TestResponse, SelectQuestions
 from models import Course, Topics, Questions, Results, User, Test
 
 import os
@@ -65,12 +65,11 @@ def get_topic(topic_id: int):
         raise HTTPException(status_code=404, detail="Topic not found")
     return topic
 
-@app.post("/questions", response_model=SchemaQuestions)
-def create_question(question: SchemaQuestions):
-    db_question = Questions(**question.dict())
-    db.session.add(db_question)
-    db.session.commit()
-    return db_question
+@app.post("/select-questions/{topic_id}", response_model=List[SelectQuestions])
+def create_question(topic_id):
+    db_questions = db.session.query(Questions).filter(Questions.topic_id == topic_id).all()
+
+    return db_questions
 
 @app.get("/questions/{question_id}", response_model=SchemaQuestions)
 def get_question(question_id: int):

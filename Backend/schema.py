@@ -51,6 +51,10 @@ class Questions(BaseModel):
     class Config:
         orm_mode = True
 
+class SelectQuestions(BaseModel):
+    id: int
+    statement: str
+
 class ResultsCreate(BaseModel):
     user_id: int
     test_id: int

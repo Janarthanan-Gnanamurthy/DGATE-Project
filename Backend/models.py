@@ -36,7 +36,7 @@ class Topics(Base):
 
 class Questions(Base):
     __tablename__ = 'questions'
-    id = Column(Integer, primary_key=True, auto_increment=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     statement = Column(String, nullable=False)
     description = Column(String)
     question_uri = Column(String)
