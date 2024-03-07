@@ -167,7 +167,6 @@ async def handle_data(request: Request, topic_id):
             'option_c': question_data[4],
             'option_d': question_data[5],
             'answer': question_data[6],
-            'answer_uri': 'None',
             'explanation': question_data[7],
             'difficulty': 'Level 2',
             'topic_id': topic_id

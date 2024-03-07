@@ -36,16 +36,16 @@ class Topics(Base):
 
 class Questions(Base):
     __tablename__ = 'questions'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, auto_increment=True)
     statement = Column(String, nullable=False)
     description = Column(String)
     question_uri = Column(String)
-    option_a = Column(String, unique=True)
-    option_b = Column(String, unique=True)
-    option_c = Column(String, unique=True)
-    option_d = Column(String, unique=True)
+    option_a = Column(String)
+    option_b = Column(String)
+    option_c = Column(String)
+    option_d = Column(String)
     answer = Column(String)
-    answer_uri = Column(String, nullable=False)
+    answer_uri = Column(String)
     explanation = Column(String)
     difficulty = Column(String)
     topic_id = Column(Integer, ForeignKey('topics.id'))
