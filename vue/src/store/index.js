@@ -79,6 +79,8 @@ const store = createStore({
 				const data = await response.json();
 				console.log('Course Fetched', data);
 				commit('getCourse', data);
+				return data
+
 			} catch (error) {
 				console.error('Error fetching course:', error);
 				alert('Error fetching course. Please try again.');
