@@ -52,8 +52,8 @@
 			<div v-if="showResult" class="container mx-auto p-3 text-2xl w-full">
 				<div class="overflow-y-auto p-10">
 					<div class="mb-10 flex justify-center"><div :class="getBackgroundClasses(score)" class="radial-progress border-4  font-bold text-2xl" :style="{ '--value': score , '--size': '8rem'}" role="progressbar">{{ score }}</div></div>
-					<div v-for="question in test.questions" :key="question.id" class="border-2  border-gray-600 text-2xl rounded-md mb-5" :class="{ 'bg-green-300': selectedOptions[question.id] === question.answer, 'bg-red-300': selectedOptions[question.id] !== question.answer }">
-						<p class="p-1 text-xl">Question No: {{ question.id }}</p>
+					<div v-for=" [ index, question] of test.questions.entries()" :key="question.id" class="border-2  border-gray-600 text-2xl rounded-md mb-5" :class="{ 'bg-green-300': selectedOptions[question.id] === question.answer, 'bg-red-300': selectedOptions[question.id] !== question.answer }">
+						<p class="p-1 text-xl">Question No: {{ index + 1}}</p>
 						<div class="border-2 border-gray-600 border-b-0 border-x-0 p-2 w-full rounded-t-md bg-slate-50">
 							<p class="mb-3">{{ question.statement }}</p>
 							<img v-if="!question.question_uri=='string'" :src="'/static/image/' + question.question_uri" alt="Question {{ question.id }}" width="500" class="p-3 mx-auto" />
@@ -253,6 +253,7 @@ export default {
       if (window.confirm(confirmationMessage)) {
         this.SubmitForm();
 				clearInterval(this.timerInterval);
+				this.$store.commit('deleteTest')
 				window.removeEventListener('beforeunload', this.handleBeforeUnload);
 
         next();

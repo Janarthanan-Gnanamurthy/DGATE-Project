@@ -32,6 +32,13 @@ class Topics(BaseModel):
     class Config:
         orm_mode= True
 
+class TopicCreate(BaseModel):
+    title:str
+    course_id: int
+
+class TopicResponse(BaseModel):
+    id :int
+
 class Questions(BaseModel):
     id:int
     statement: str

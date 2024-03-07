@@ -71,6 +71,11 @@ export default {
         return 'bg-red-300 text-red-600 border-red-300';
       }
     },
-  }
+  },
+	beforeRouteLeave(to, from, next){
+		this.$store.commit('deleteTestResult')
+		next()
+
+	}
 }
 </script>

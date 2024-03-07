@@ -46,9 +46,17 @@ const store = createStore({
 			state.results = results
 			localStorage.setItem('appData', JSON.stringify(state));
 		},
+		deleteResults(state){
+			state.results = null
+      localStorage.setItem('appData', JSON.stringify(state));
+		},
 		getTestResult(state, test_result){
 			state.test_result=test_result
 			localStorage.setItem('appData', JSON.stringify(state))
+		},
+		deleteTestResult(state){
+			state.test_result = null
+      localStorage.setItem('appData', JSON.stringify(state));
 		}
 	},
 	actions: {
