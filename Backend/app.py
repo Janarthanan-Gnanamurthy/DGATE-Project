@@ -32,7 +32,7 @@ app.add_middleware(
 async def root():
     return {"message": "hello world"}
 
-@app.post("/course", response_model=SchemaCourse)
+@app.post("/course", response_model=CourseResponse)
 async def course(course: SchemaCourse):
     new_course = Course(code=course.code, title=course.title)
     db.session.add(new_course)

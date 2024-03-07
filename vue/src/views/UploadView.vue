@@ -6,10 +6,41 @@
         id="course-select"
         v-model="selectedCourse"
         class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        @change="showAddCourseModal"
       >
         <option value="">Select Course</option>
         <option v-for="course in courses" :key="course.id" :value="course.id">{{ course.title }}</option>
+        <option value="-1">Add New Course</option>
       </select>
+    </div>
+
+    <div>
+      <!-- The modal -->
+      <div v-if="showModal" class="modal modal-open">
+        <div class="modal-box relative">
+          <div class="text-3xl font-extrabold pb-7">Add New Course</div>
+          <label for="course-title" class="block text-xl font-semibold mb-2">Course Title:</label>
+          <input
+            id="course-title"
+            type="text"
+            v-model="newCourseTitle"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4"
+          />
+
+          <label for="course-code" class="block text-xl font-semibold mb-2">Course Code:</label>
+          <input
+            id="course-code"
+            type="text"
+            v-model="newCourseCode"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4"
+          />
+
+          <div class="modal-action">
+            <button @click="addNewCourse" class="btn btn-primary">Add</button>
+            <button @click="closeModal" class="btn btn-ghost">Cancel</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="mb-6">
@@ -53,8 +84,11 @@ import { mapState } from 'vuex';
     data(){
       return {
         topic_id: null,
+        showModal: false,
         selectedSheet: '',
         selectedCourse: '',
+        newCourseTitle: '',
+        newCourseCode:'',
         sheetNames: [],
         workbook: null,
         jsonData: null
@@ -129,7 +163,41 @@ import { mapState } from 'vuex';
         .catch(error => {
           console.error(error);
         });
-      }
+      },
+      async addNewCourse(){
+        const Course = {title:this.newCourseTitle , code: this.newCourseCode}
+        try{
+          const response = await fetch(`http://localhost:8000/course`, {
+          method: 'POST',
+          body: JSON.stringify(Course),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          if (!response.ok){
+            throw new Error(`HTTP error! Status: ${response.status}`)
+          }
+          await this.$store.dispatch('getCourses');
+          const data = await response.json();
+          this.selectedCourse = data.id
+          alert('Course Added successfully')
+          this.closeModal()
+
+        }catch (error) {
+          console.error('Error fetching courses:', error);
+          alert('Error fetching User. Please try again.');
+        }
+      },
+      showAddCourseModal(event) {
+        if (event.target.value === '-1') {
+          this.showModal = true;
+        }
+      },
+      closeModal() {
+        this.showModal = false;
+        this.newCourseTitle = '';
+        this.newCourseCode = '';
+      },
     }
   }
 </script>
