@@ -253,6 +253,7 @@ export default {
       if (window.confirm(confirmationMessage)) {
         this.SubmitForm();
 				clearInterval(this.timerInterval);
+				this.$store.commit('deleteTest')
 				window.removeEventListener('beforeunload', this.handleBeforeUnload);
 
         next();
