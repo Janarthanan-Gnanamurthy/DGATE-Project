@@ -1,19 +1,47 @@
 <template>
-  <main class="p-10">
-    <div class="text-2xl">
-      <label for="course-select">Select Course:</label>
-      <select id="course-select" v-model="selectedCourse">
+  <main class="container mx-auto p-10">
+    <div class="mb-6">
+      <label for="course-select" class="block text-2xl font-semibold mb-2">Select Course:</label>
+      <select
+        id="course-select"
+        v-model="selectedCourse"
+        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      >
         <option value="">Select Course</option>
-        <option v-for="course in courses" :key="course.id" :value="course.id">{{ course.title}}</option>
+        <option v-for="course in courses" :key="course.id" :value="course.id">{{ course.title }}</option>
       </select>
     </div>
-    <input class="my-5 text-2xl" type="file" @change="handleFileUpload" accept=".xlsx" /> <br>
-    <label for="sheetDropdown">Select Topic:</label>
-    <select id="sheetDropdown" v-model="selectedSheet" @change="sheetToJson">
-      <option value="">Select Sheet</option>
-      <option v-for="sheet in sheetNames" :key="sheet" :value="sheet">{{ sheet }}</option>
-    </select><br>
-    <button @click="createTopic" class="btn btn-primary">Upload</button>
+
+    <div class="mb-6">
+      <label for="fileInput" class="block text-2xl font-semibold mb-2">Upload Excel File:</label>
+      <input
+        id="fileInput"
+        type="file"
+        @change="handleFileUpload"
+        accept=".xlsx"
+        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+
+    <div class="mb-6">
+      <label for="sheetDropdown" class="block text-2xl font-semibold mb-2">Select Topic:</label>
+      <select
+        id="sheetDropdown"
+        v-model="selectedSheet"
+        @change="sheetToJson"
+        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      >
+        <option value="">Select Sheet</option>
+        <option v-for="sheet in sheetNames" :key="sheet" :value="sheet">{{ sheet }}</option>
+      </select>
+    </div>
+
+    <button
+      @click="createTopic"
+      class="btn btn-primary px-6 py-3 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+      Upload
+    </button>
   </main>
 </template>
 
@@ -25,8 +53,8 @@ import { mapState } from 'vuex';
     data(){
       return {
         topic_id: null,
-        selectedSheet: null,
-        selectedCourse: null,
+        selectedSheet: '',
+        selectedCourse: '',
         sheetNames: [],
         workbook: null,
         jsonData: null
@@ -48,9 +76,6 @@ import { mapState } from 'vuex';
 
           // Update sheetNames to contain all sheet names
           this.sheetNames = this.workbook.SheetNames;
-
-          // Set selectedSheet to the first sheet by default (change as needed)
-          this.selectedSheet = this.sheetNames[0];
         };
 
         reader.readAsArrayBuffer(file);
