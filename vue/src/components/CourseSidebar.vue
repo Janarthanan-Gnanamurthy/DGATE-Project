@@ -36,11 +36,11 @@
             ></path>
           </svg>
           <div
-            class="absolute inset-0 rounded-full transform scale-0 transition-all duration-300"
+            class="text-xl text-white absolute inset-0 rounded-full transform scale-0 transition-all duration-300 text-center p-2"
             :class="{
               'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 scale-105': selectedTopic === topic.id,
             }"
-          ></div>
+          ><p>{{ topic.title }}</p></div>
         </div>
         <div
           v-show="selectedTopic === topic.id"
@@ -60,7 +60,7 @@
             <div
               class="absolute inset-0 rounded-md transform scale-0 transition-all duration-300"
               :class="{
-                'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 scale-105': selectedTest === test.id,
+                'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 scale-105 opacity-30' : selectedTest === test.id,
               }"
             ></div>
           </div>

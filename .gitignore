@@ -12,3 +12,7 @@ __pycache__/
 
 #Ignore .vscode file
 .vscode/
+
+#Ignore this random crap
+.~lock.Java.xlsx#
+
