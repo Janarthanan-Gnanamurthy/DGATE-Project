@@ -158,6 +158,8 @@ import { mapState } from 'vuex';
           // Handle the response from the backend
           if (response.ok){
             console.log('Sucessfully uploaded questions');
+            alert('Questions uploaded Successfully');
+            window.location.reload()
           };
         })
         .catch(error => {
