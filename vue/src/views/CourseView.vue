@@ -91,13 +91,6 @@ export default {
 			currentTopic: 0,
 			score: null,
 			currentTest: null,
-			isDisclaimerEntering: false,
-		}
-	},
-	watch: {
-		currentTest(newValue, oldValue) {
-			// Set isDisclaimerEntering to true when currentTest changes
-			this.isDisclaimerEntering = true;
 		}
 	},
 	methods: {
@@ -130,10 +123,3 @@ export default {
 }
 
 </script>
-
-<style scoped>
-
-.fade-leave-to {
-  transform: translateY(100);
-}
-</style>
