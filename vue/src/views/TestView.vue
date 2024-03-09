@@ -1,16 +1,16 @@
 <template>
 	<main>
-		<div>
-			<nav class="navbar bg-indigo-800 font-bold text-2xl text-white pl-5">{{ $store.state.course.title }} : {{ $store.state.topic }}</nav>
-			<nav class="navbar justify-center bg-indigo-900 font-bold text-2xl text-white pl-5" >
-				<p>Time remaining:</p>
-				<div class="mx-2 bg-white text-black rounded-md p-1 px-2">
-					<span class="countdown font-mono text-3xl">
-						<span :style="{'--value': minutes }"></span>:
-      			<span :style="{'--value': seconds }"></span>
-					</span>
-				</div>
-			</nav>
+		<nav class="navbar bg-indigo-800 font-bold text-2xl text-white pl-5">{{ $store.state.course.title }} : {{ $store.state.topic }}</nav>
+		<nav class="navbar justify-center bg-indigo-900 font-bold text-2xl text-white pl-5" >
+			<p>Time remaining:</p>
+			<div class="mx-2 bg-white text-black rounded-md p-1 px-2">
+				<span class="countdown font-mono text-3xl">
+					<span :style="{'--value': minutes }"></span>:
+					<span :style="{'--value': seconds }"></span>
+				</span>
+			</div>
+		</nav>
+		<div class="grid">
 			<div v-if="test.submitted" class="container mx-auto text-center text-4xl mt-28 p-5 font-bold">Test already attempted!</div>
 			<div v-if="showQuestions && !test.submitted" class="p-3 text-2xl w-full">
 				<form @submit.prevent="SubmitForm">
@@ -24,27 +24,33 @@
 								</div>
 								<div class="flex flex-col text-xl border-2 border-gray-600 border-b-0 border-x-0 p-3 rounded-b-md">
 									<label class="items-center mb-0.5">
-										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_a" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required />
+										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_a" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
 										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_a }}</span>
 									</label>
 									<label class="items-center mb-0.5">
-										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_b" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required />
+										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_b" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
 										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_b }}</span>
 									</label>
 									<label class="items-center mb-0.5">
-										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_c" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required />
+										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_c" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
 										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_c }}</span>
 									</label>
 									<label class="items-center mb-0.5">
-										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_d" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required />
+										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_d" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
 										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_d }}</span>
 									</label>
 								</div>
 							</div>
 							<br />
               <button @click="previousQuestion" :disabled="currentQuestionIndex === 0" type="button" class="btn btn-primary text-xl mr-2">Previous</button>
-							<button v-if="currentQuestionIndex < test.questions.length -1 " @click="nextQuestion" :disabled="!selectedOptions[test.questions[currentQuestionIndex].id]" type="button" class="btn btn-primary text-xl">Next</button>
-							<input v-else type="submit" class="btn btn-primary text-xl" />
+							<button
+								class="btn btn-sm btn-warning"
+								@click="markForReview(currentQuestionIndex)"
+							>
+								Mark for Review
+							</button>
+							<button @click="nextQuestion" type="button" class="btn btn-primary text-xl">Next</button>
+							<input v-if="currentQuestionIndex == test.questions.length -1 " type="submit" class="btn btn-primary text-xl" />
 						</div>
 					</div>
 				</form>
@@ -96,6 +102,25 @@
 					<br />
 				</div>
 			</div>
+			<div class="h-full overflow-y-auto p-4 bg-gray-200">
+				<h3 class="text-xl font-bold mb-4">Questions</h3>
+				<div class="flex flex-wrap">
+					<div
+						v-for="(question, index) in test.questions"
+						:key="question.id"
+						class="w-8 h-8 mx-1 mb-2 flex items-center justify-center rounded-full text-sm font-bold cursor-pointer"
+						:class="{
+							'bg-green-500 text-white': questionStatus[index] === 'answered',
+							'bg-yellow-500 text-white': questionStatus[index] === 'markedForReview',
+							'bg-red-500 text-white': questionStatus[index] === 'unanswered',
+							'bg-gray-400 text-white': questionStatus[index] === 'visited',
+						}"
+						@click="navigateToQuestion(index)"
+					>
+						{{ index + 1 }}
+					</div>
+				</div>
+			</div>
 		</div>
 	</main>
 </template>
@@ -114,9 +139,30 @@ export default {
       totalTimePerQuestion: 60,
 			totaltime: 0,
 			timer: 0,
+			questionStatus: []
 		}
 	},
 	methods:{
+		initQuestionStatus() {
+			this.questionStatus = Array(this.test.questions.length).fill('unanswered');
+		},
+		updateQuestionStatus(index, status) {
+			this.questionStatus.splice(index, 1, status);
+		},
+		markForReview(index) {
+			this.updateQuestionStatus(index, 'markedForReview');
+		},
+		answerQuestion(index) {
+			const questionId = this.test.questions[index].id;
+			if (this.selectedOptions[questionId]) {
+				this.updateQuestionStatus(index, 'answered');
+			} else {
+				this.updateQuestionStatus(index, 'unanswered');
+			}
+		},
+		navigateToQuestion(index) {
+			this.currentQuestionIndex = index;
+		},
     nextQuestion() {
       // Move to the next question
       this.currentQuestionIndex++;
@@ -135,7 +181,7 @@ export default {
 						this.timer--;
 					} else {
 						this.currentQuestionIndex = this.test.questions.length
-						this.SubmitForm();
+						// this.SubmitForm();
 					}
 				}, 1000);
 			}
@@ -221,7 +267,7 @@ export default {
       event.returnValue = confirmationMessage; // Standard for most browsers
       return confirmationMessage; // For some older browsers
     },
-	},
+	},	
 	computed: {
     minutes() {
       return Math.floor(this.timer / 60);
@@ -240,6 +286,7 @@ export default {
 		this.Timer();
 	},
 	mounted() {
+		this.initQuestionStatus();
 		if (this.showQuestions && !this.test.submitted){
 			// Prevent going back and reloading the page
 			window.addEventListener('beforeunload', this.handleBeforeUnload);
@@ -251,7 +298,7 @@ export default {
       // Display a confirmation message
       const confirmationMessage = "Warning: Your Test will be auto Submitted. If you leave this page.";
       if (window.confirm(confirmationMessage)) {
-        this.SubmitForm();
+        // this.SubmitForm();
 				clearInterval(this.timerInterval);
 				this.$store.commit('deleteTest')
 				window.removeEventListener('beforeunload', this.handleBeforeUnload);
