@@ -10,114 +10,173 @@
 				</span>
 			</div>
 		</nav>
-		<div class="grid">
-			<div v-if="test.submitted" class="container mx-auto text-center text-4xl mt-28 p-5 font-bold">Test already attempted!</div>
-			<div v-if="showQuestions && !test.submitted" class="p-3 text-2xl w-full">
-				<form @submit.prevent="SubmitForm">
+		<div class="flex">
+			<div class="w-3/4">
+				<div v-if="test.submitted" class="container mx-auto text-center text-4xl mt-28 p-5 font-bold">Test already attempted!</div>
+				<div v-if="showQuestions && !test.submitted" class="p-3 text-2xl w-full">
+					<form @submit.prevent="SubmitForm">
+						<div class="overflow-y-auto p-10">
+							<div v-if="currentQuestionIndex < test.questions.length">
+								<div :key="test.questions[currentQuestionIndex].id" class="border-2 border-gray-600 bg-primary-content text-2xl rounded-md mb-5">
+									<p class="p-1 text-xl">Question No: {{currentQuestionIndex + 1}}</p>
+									<div class="border-2 border-gray-600 border-b-0 border-x-0 p-2 w-full rounded-t-md bg-slate-50">
+										<p class="mb-3">{{ test.questions[currentQuestionIndex].statement }}</p>
+										<img v-if="!test.questions[currentQuestionIndex].question_uri=='string'" :src="'/static/image/' + test.questions[currentQuestionIndex].question_uri" alt="Question {{ test.questions[currentQuestionIndex].id }}" width="500" class="p-3 mx-auto" />
+									</div>
+									<div class="flex flex-col text-xl border-2 border-gray-600 border-b-0 border-x-0 p-3 rounded-b-md">
+										<label class="items-center mb-0.5">
+											<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_a" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
+											<span class="ml-2">{{ test.questions[currentQuestionIndex].option_a }}</span>
+										</label>
+										<label class="items-center mb-0.5">
+											<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_b" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
+											<span class="ml-2">{{ test.questions[currentQuestionIndex].option_b }}</span>
+										</label>
+										<label class="items-center mb-0.5">
+											<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_c" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
+											<span class="ml-2">{{ test.questions[currentQuestionIndex].option_c }}</span>
+										</label>
+										<label class="items-center mb-0.5">
+											<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_d" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
+											<span class="ml-2">{{ test.questions[currentQuestionIndex].option_d }}</span>
+										</label>
+									</div>
+								</div>
+								<br />
+								<button @click="previousQuestion" :disabled="currentQuestionIndex === 0" type="button" class="btn btn-primary text-xl">Previous</button>
+								<button
+									class="btn btn-primary text-xl mx-2"
+									@click="markForReview(currentQuestionIndex)"
+								>
+									Mark for Review
+								</button>
+								<button @click="nextQuestion" type="button" class="btn btn-primary text-xl">Next</button>
+								<input v-if="currentQuestionIndex == test.questions.length -1 " type="submit" class="btn btn-primary text-xl ml-2" />
+							</div>
+						</div>
+					</form>
+				</div>
+				<div v-if="showResult" class="container mx-auto p-3 text-2xl w-full">
 					<div class="overflow-y-auto p-10">
-						<div v-if="currentQuestionIndex < test.questions.length">
-							<div :key="test.questions[currentQuestionIndex].id" class="border-2 border-gray-600 bg-primary-content text-2xl rounded-md mb-5">
-								<p class="p-1 text-xl">Question No: {{currentQuestionIndex + 1}}</p>
-								<div class="border-2 border-gray-600 border-b-0 border-x-0 p-2 w-full rounded-t-md bg-slate-50">
-									<p class="mb-3">{{ test.questions[currentQuestionIndex].statement }}</p>
-									<img v-if="!test.questions[currentQuestionIndex].question_uri=='string'" :src="'/static/image/' + test.questions[currentQuestionIndex].question_uri" alt="Question {{ test.questions[currentQuestionIndex].id }}" width="500" class="p-3 mx-auto" />
+						<div class="mb-10 flex justify-center"><div :class="getBackgroundClasses(score)" class="radial-progress border-4  font-bold text-2xl" :style="{ '--value': score , '--size': '8rem'}" role="progressbar">{{ score }}</div></div>
+						<div v-for=" [ index, question] of test.questions.entries()" :key="question.id" class="border-2  border-gray-600 text-2xl rounded-md mb-5" :class="{ 'bg-green-300': selectedOptions[question.id] === question.answer, 'bg-red-300': selectedOptions[question.id] !== question.answer }">
+							<p class="p-1 text-xl">Question No: {{ index + 1}}</p>
+							<div class="border-2 border-gray-600 border-b-0 border-x-0 p-2 w-full rounded-t-md bg-slate-50">
+								<p class="mb-3">{{ question.statement }}</p>
+								<img v-if="!question.question_uri=='string'" :src="'/static/image/' + question.question_uri" alt="Question {{ question.id }}" width="500" class="p-3 mx-auto" />
+							</div>
+							<div class="flex flex-col text-xl border-2 border-gray-600 border-x-0 p-3 rounded-b-md">
+								<label class="items-center mb-0.5">
+									<input type="radio" :name="question.id" class="radio-xs " :value="question.option_a" v-model="selectedOptions[question.id]" disabled/>
+									<span class="ml-2">{{ question.option_a }}</span>
+								</label>
+								<label class="items-center mb-0.5">
+									<input type="radio" :name="question.id" class="radio-xs" :value="question.option_b" v-model="selectedOptions[question.id]" disabled/>
+									<span class="ml-2">{{ question.option_b }}</span>
+								</label>
+								<label class="items-center mb-0.5">
+									<input type="radio" :name="question.id" class="radio-xs" :value="question.option_c" v-model="selectedOptions[question.id]" disabled/>
+									<span class="ml-2">{{ question.option_c }}</span>
+								</label>
+								<label class="items-center mb-0.5">
+									<input type="radio" :name="question.id" class="radio-xs" :value="question.option_d" v-model="selectedOptions[question.id]" disabled/>
+									<span class="ml-2">{{ question.option_d }}</span>
+								</label>
+							</div>
+							<div v-if="selectedOptions[question.id]!==question.answer" class="text-xl w-full rounded-md">
+								<p class="text-xl p-2 bg-white rounded-b-md">Correct Answer :</p>
+								<div
+									class="text-xl text-black p-2 w-full border-b-2 border-black rounded-md"
+								>
+									{{question.answer}}
 								</div>
-								<div class="flex flex-col text-xl border-2 border-gray-600 border-b-0 border-x-0 p-3 rounded-b-md">
-									<label class="items-center mb-0.5">
-										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_a" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
-										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_a }}</span>
-									</label>
-									<label class="items-center mb-0.5">
-										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_b" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
-										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_b }}</span>
-									</label>
-									<label class="items-center mb-0.5">
-										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_c" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
-										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_c }}</span>
-									</label>
-									<label class="items-center mb-0.5">
-										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_d" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
-										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_d }}</span>
-									</label>
+							</div>
+							<div class="text-xl rounded-md w-full">
+								<p class="p-1 bg-white rounded-b-md">Explanation :</p>
+								<div
+									class="text-xl text-black p-2 w-full rounded-md"
+								>
+									{{question.explanation}}
 								</div>
 							</div>
-							<br />
-              <button @click="previousQuestion" :disabled="currentQuestionIndex === 0" type="button" class="btn btn-primary text-xl mr-2">Previous</button>
-							<button
-								class="btn btn-sm btn-warning"
-								@click="markForReview(currentQuestionIndex)"
-							>
-								Mark for Review
-							</button>
-							<button @click="nextQuestion" type="button" class="btn btn-primary text-xl">Next</button>
-							<input v-if="currentQuestionIndex == test.questions.length -1 " type="submit" class="btn btn-primary text-xl" />
 						</div>
+						<br />
 					</div>
-				</form>
-			</div>
-			<div v-if="showResult" class="container mx-auto p-3 text-2xl w-full">
-				<div class="overflow-y-auto p-10">
-					<div class="mb-10 flex justify-center"><div :class="getBackgroundClasses(score)" class="radial-progress border-4  font-bold text-2xl" :style="{ '--value': score , '--size': '8rem'}" role="progressbar">{{ score }}</div></div>
-					<div v-for=" [ index, question] of test.questions.entries()" :key="question.id" class="border-2  border-gray-600 text-2xl rounded-md mb-5" :class="{ 'bg-green-300': selectedOptions[question.id] === question.answer, 'bg-red-300': selectedOptions[question.id] !== question.answer }">
-						<p class="p-1 text-xl">Question No: {{ index + 1}}</p>
-						<div class="border-2 border-gray-600 border-b-0 border-x-0 p-2 w-full rounded-t-md bg-slate-50">
-							<p class="mb-3">{{ question.statement }}</p>
-							<img v-if="!question.question_uri=='string'" :src="'/static/image/' + question.question_uri" alt="Question {{ question.id }}" width="500" class="p-3 mx-auto" />
-						</div>
-						<div class="flex flex-col text-xl border-2 border-gray-600 border-x-0 p-3 rounded-b-md">
-							<label class="items-center mb-0.5">
-								<input type="radio" :name="question.id" class="radio-xs " :value="question.option_a" v-model="selectedOptions[question.id]" disabled/>
-								<span class="ml-2">{{ question.option_a }}</span>
-							</label>
-							<label class="items-center mb-0.5">
-								<input type="radio" :name="question.id" class="radio-xs" :value="question.option_b" v-model="selectedOptions[question.id]" disabled/>
-								<span class="ml-2">{{ question.option_b }}</span>
-							</label>
-							<label class="items-center mb-0.5">
-								<input type="radio" :name="question.id" class="radio-xs" :value="question.option_c" v-model="selectedOptions[question.id]" disabled/>
-								<span class="ml-2">{{ question.option_c }}</span>
-							</label>
-							<label class="items-center mb-0.5">
-								<input type="radio" :name="question.id" class="radio-xs" :value="question.option_d" v-model="selectedOptions[question.id]" disabled/>
-								<span class="ml-2">{{ question.option_d }}</span>
-							</label>
-						</div>
-						<div v-if="selectedOptions[question.id]!==question.answer" class="text-xl w-full rounded-md">
-							<p class="text-xl p-2 bg-white rounded-b-md">Correct Answer :</p>
-							<div
-								class="text-xl text-black p-2 w-full border-b-2 border-black rounded-md"
-							>
-								{{question.answer}}
-							</div>
-						</div>
-						<div class="text-xl rounded-md w-full">
-							<p class="p-1 bg-white rounded-b-md">Explanation :</p>
-							<div
-								class="text-xl text-black p-2 w-full rounded-md"
-							>
-								{{question.explanation}}
-							</div>
-						</div>
-					</div>
-					<br />
 				</div>
 			</div>
-			<div class="h-full overflow-y-auto p-4 bg-gray-200">
-				<h3 class="text-xl font-bold mb-4">Questions</h3>
-				<div class="flex flex-wrap">
+			<div class="bg-gray-200 w-1/4 p-4 h-screen">
+				<div class="grid grid-cols-4 gap-2">
+					<h3 class="text-xl font-bold mb-4 col-span-4">Questions</h3>
 					<div
 						v-for="(question, index) in test.questions"
 						:key="question.id"
-						class="w-8 h-8 mx-1 mb-2 flex items-center justify-center rounded-full text-sm font-bold cursor-pointer"
+						class="flex items-center justify-center rounded-full text-2xl font-bold cursor-pointer"
 						:class="{
 							'bg-green-500 text-white': questionStatus[index] === 'answered',
 							'bg-yellow-500 text-white': questionStatus[index] === 'markedForReview',
 							'bg-red-500 text-white': questionStatus[index] === 'unanswered',
-							'bg-gray-400 text-white': questionStatus[index] === 'visited',
+							'bg-gray-400 text-white': questionStatus[index] === 'unvisited',
 						}"
 						@click="navigateToQuestion(index)"
 					>
-						{{ index + 1 }}
+						<div class="w-12 h-12 flex items-center justify-center">
+							<svg
+								v-if="questionStatus[index] === 'unanswered'"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								class="w-6 h-6"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+							<svg
+								v-else-if="questionStatus[index] === 'answered'"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								class="w-6 h-6"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.354 8.493-12.739a.75.75 0 011.04-.208z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+							<svg
+								v-else-if="questionStatus[index] === 'markedForReview'"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								class="w-6 h-6"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01.372-.568 6.787 6.787 0 011.955-3.38z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+							<svg
+								v-else
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								class="w-6 h-6"
+							>
+								<path
+									d="M12 15a3 3 0 100-6 3 3 0 000 6z"
+								/>
+								<path
+									fill-rule="evenodd"
+									d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+							{{ index + 1 }}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -144,7 +203,8 @@ export default {
 	},
 	methods:{
 		initQuestionStatus() {
-			this.questionStatus = Array(this.test.questions.length).fill('unanswered');
+			this.questionStatus = Array(this.test.questions.length).fill('unvisited');
+			this.questionStatus[0] = 'unanswered'
 		},
 		updateQuestionStatus(index, status) {
 			this.questionStatus.splice(index, 1, status);
@@ -166,6 +226,12 @@ export default {
     nextQuestion() {
       // Move to the next question
       this.currentQuestionIndex++;
+
+			console.log('hehe')
+			if (!this.selectedOptions[this.currentQuestionIndex]) {
+				console.log('oho')
+				this.updateQuestionStatus(this.currentQuestionIndex, 'unanswered')
+			}
     },
 		previousQuestion(){
       if (this.currentQuestionIndex > 0) {
