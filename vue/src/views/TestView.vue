@@ -14,57 +14,51 @@
 		<div class="flex">
 			<div class="w-3/4">
 				<div v-if="showQuestions && !test.submitted" class="p-3 text-2xl w-full">
-						<div class="overflow-y-auto p-10">
-							<div v-if="currentQuestionIndex < test.questions.length">
-								<div :key="test.questions[currentQuestionIndex].id" class="border-2 border-gray-600 bg-primary-content text-2xl rounded-md mb-5">
-									<p class="p-1 text-xl">Question No: {{currentQuestionIndex + 1}}</p>
-									<div class="border-2 border-gray-600 border-b-0 border-x-0 p-2 w-full rounded-t-md bg-slate-50">
-										<p class="mb-3">{{ test.questions[currentQuestionIndex].statement }}</p>
-										<img v-if="!test.questions[currentQuestionIndex].question_uri=='string'" :src="'/static/image/' + test.questions[currentQuestionIndex].question_uri" alt="Question {{ test.questions[currentQuestionIndex].id }}" width="500" class="p-3 mx-auto" />
-									</div>
-									<div class="flex flex-col text-xl border-2 border-gray-600 border-b-0 border-x-0 p-3 rounded-b-md">
-										<label class="items-center mb-0.5">
-											<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_a" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
-											<span class="ml-2">{{ test.questions[currentQuestionIndex].option_a }}</span>
-										</label>
-										<label class="items-center mb-0.5">
-											<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_b" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
-											<span class="ml-2">{{ test.questions[currentQuestionIndex].option_b }}</span>
-										</label>
-										<label class="items-center mb-0.5">
-											<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_c" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
-											<span class="ml-2">{{ test.questions[currentQuestionIndex].option_c }}</span>
-										</label>
-										<label class="items-center mb-0.5">
-											<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_d" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
-											<span class="ml-2">{{ test.questions[currentQuestionIndex].option_d }}</span>
-										</label>
-									</div>
+					<div class="overflow-y-auto p-10">
+						<div v-if="currentQuestionIndex < test.questions.length">
+							<div :key="test.questions[currentQuestionIndex].id" class="border-2 border-gray-600 bg-primary-content text-2xl rounded-md mb-5">
+								<p class="p-1 text-xl">Question No: {{currentQuestionIndex + 1}}</p>
+								<div class="border-2 border-gray-600 border-b-0 border-x-0 p-2 w-full rounded-t-md bg-slate-50">
+									<p class="mb-3">{{ test.questions[currentQuestionIndex].statement }}</p>
+									<img v-if="!test.questions[currentQuestionIndex].question_uri=='string'" :src="'/static/image/' + test.questions[currentQuestionIndex].question_uri" alt="Question {{ test.questions[currentQuestionIndex].id }}" width="500" class="p-3 mx-auto" />
 								</div>
-								<br />
-								<button @click="previousQuestion" :disabled="currentQuestionIndex === 0" type="button" class="btn btn-primary text-xl">Previous</button>
-								<button
-									class="btn btn-primary text-xl mx-2"
-									@click="markForReview(currentQuestionIndex)"
-								>
-									Mark for Review
-								</button>
-								<button v-if="currentQuestionIndex !== test.questions.length -1 " @click="nextQuestion" type="button" class="btn btn-primary text-xl">Next</button>
-								<button v-if="currentQuestionIndex == test.questions.length -1 " type="submit" class="btn btn-primary text-xl" @click="SubmitForm">Submit</button>
+								<div class="flex flex-col text-xl border-2 border-gray-600 border-b-0 border-x-0 p-3 rounded-b-md">
+									<label class="items-center mb-0.5">
+										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_a" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
+										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_a }}</span>
+									</label>
+									<label class="items-center mb-0.5">
+										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_b" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
+										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_b }}</span>
+									</label>
+									<label class="items-center mb-0.5">
+										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_c" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
+										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_c }}</span>
+									</label>
+									<label class="items-center mb-0.5">
+										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_d" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
+										<span class="ml-2">{{ test.questions[currentQuestionIndex].option_d }}</span>
+									</label>
+								</div>
 							</div>
+							<br />
+							<button @click="previousQuestion" :disabled="currentQuestionIndex === 0" type="button" class="btn btn-primary text-xl">Previous</button>
+							<button
+								class="btn btn-primary text-xl mx-2"
+								@click="markForReview(currentQuestionIndex)"
+							>
+								Mark for Review
+							</button>
+							<button v-if="currentQuestionIndex !== test.questions.length -1 " @click="nextQuestion" type="button" class="btn btn-primary text-xl">Next</button>
+							<button v-if="currentQuestionIndex == test.questions.length -1 " type="submit" class="btn btn-primary text-xl" @click="SubmitForm">Submit</button>
 						</div>
+					</div>
 				</div>
 			</div>
 			<div v-if="showQuestions && !test.submitted" class="bg-gray-200 w-1/4 p-4 h-screen">
 				<div class="grid grid-cols-4 gap-2">
 					<h3 class="text-xl font-bold mb-4 col-span-4">Questions</h3>
-					<div v-for="(question, index) in test.questions" :key="question.id" class="flex items-center justify-center rounded-full text-2xl font-bold cursor-pointer" :class="{
-							'bg-green-500 text-white': questionStatus[index] === 'answered',
-							'bg-yellow-500 text-white': questionStatus[index] === 'markedForReview',
-							'bg-red-500 text-white': questionStatus[index] === 'unanswered',
-							'bg-gray-400 text-white': questionStatus[index] === 'unvisited',
-							'bg-cyan-500  text-white': questionStatus[index] === 'answeredAndMarked' // Add this line
-						}" @click="navigateToQuestion(index)">
+					<div v-for="(question, index) in test.questions" :key="question.id" class="flex items-center justify-center rounded-full text-2xl font-bold cursor-pointer" :class="getQuestionClasses(index)" @click="navigateToQuestion(index)">
 						<div class="w-12 h-12 flex items-center justify-center">
 							<svg v-if="questionStatus[index] === 'unanswered'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
 								<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
@@ -184,10 +178,28 @@ export default {
 				this.updateQuestionStatus(index, 'unanswered')
 			}
 		},
+		getQuestionClasses(index) {
+      let classes = [];
+      if (this.currentQuestionIndex === index) {
+        classes.push('bg-purple-500', 'text-white');
+      } else if (this.questionStatus[index] === 'answered') {
+        classes.push('bg-green-500', 'text-white');
+      } else if (this.questionStatus[index] === 'markedForReview') {
+        classes.push('bg-yellow-500', 'text-white');
+      } else if (this.questionStatus[index] === 'unanswered') {
+        classes.push('bg-red-500', 'text-white');
+      } else if (this.questionStatus[index] === 'unvisited') {
+        classes.push('bg-gray-400', 'text-white');
+      } else if (this.questionStatus[index] === 'answeredAndMarked') {
+        classes.push('bg-sky-500', 'text-white');
+      }
+
+      return classes;
+    },
     nextQuestion() {
       // Move to the next question
       this.currentQuestionIndex++;
-			if (!this.selectedOptions[this.currentQuestionIndex]) {
+			if (this.questionStatus[this.currentQuestionIndex]=='unvisited') {
 				this.updateQuestionStatus(this.currentQuestionIndex, 'unanswered')
 			}
     },
