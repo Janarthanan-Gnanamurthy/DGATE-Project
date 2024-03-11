@@ -14,7 +14,6 @@
 		<div class="flex">
 			<div class="w-3/4">
 				<div v-if="showQuestions && !test.submitted" class="p-3 text-2xl w-full">
-					<form @submit.prevent="SubmitForm">
 						<div class="overflow-y-auto p-10">
 							<div v-if="currentQuestionIndex < test.questions.length">
 								<div :key="test.questions[currentQuestionIndex].id" class="border-2 border-gray-600 bg-primary-content text-2xl rounded-md mb-5">
@@ -51,82 +50,37 @@
 									Mark for Review
 								</button>
 								<button v-if="currentQuestionIndex !== test.questions.length -1 " @click="nextQuestion" type="button" class="btn btn-primary text-xl">Next</button>
-								<input v-if="currentQuestionIndex == test.questions.length -1 " type="submit" class="btn btn-primary text-xl" />
+								<button v-if="currentQuestionIndex == test.questions.length -1 " type="submit" class="btn btn-primary text-xl" @click="SubmitForm">Submit</button>
 							</div>
 						</div>
-					</form>
 				</div>
 			</div>
 			<div v-if="showQuestions && !test.submitted" class="bg-gray-200 w-1/4 p-4 h-screen">
 				<div class="grid grid-cols-4 gap-2">
 					<h3 class="text-xl font-bold mb-4 col-span-4">Questions</h3>
-					<div
-						v-for="(question, index) in test.questions"
-						:key="question.id"
-						class="flex items-center justify-center rounded-full text-2xl font-bold cursor-pointer"
-						:class="{
+					<div v-for="(question, index) in test.questions" :key="question.id" class="flex items-center justify-center rounded-full text-2xl font-bold cursor-pointer" :class="{
 							'bg-green-500 text-white': questionStatus[index] === 'answered',
-							'bg-yellow-500 text-white': questionStatus[index] === 'markedForReview',	
+							'bg-yellow-500 text-white': questionStatus[index] === 'markedForReview',
 							'bg-red-500 text-white': questionStatus[index] === 'unanswered',
 							'bg-gray-400 text-white': questionStatus[index] === 'unvisited',
-						}"
-						@click="navigateToQuestion(index)"
-					>
+							'bg-cyan-500  text-white': questionStatus[index] === 'answeredAndMarked' // Add this line
+						}" @click="navigateToQuestion(index)">
 						<div class="w-12 h-12 flex items-center justify-center">
-							<svg
-								v-if="questionStatus[index] === 'unanswered'"
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								class="w-6 h-6"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
-									clip-rule="evenodd"
-								/>
+							<svg v-if="questionStatus[index] === 'unanswered'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+								<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
 							</svg>
-							<svg
-								v-else-if="questionStatus[index] === 'answered'"
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								class="w-6 h-6"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.354 8.493-12.739a.75.75 0 011.04-.208z"
-									clip-rule="evenodd"
-								/>
+							<svg v-else-if="questionStatus[index] === 'answered'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+								<path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.354 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />
 							</svg>
-							<svg
-								v-else-if="questionStatus[index] === 'markedForReview'"
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								class="w-6 h-6"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01.372-.568 6.787 6.787 0 011.955-3.38z"
-									clip-rule="evenodd"
-								/>
+							<svg v-else-if="questionStatus[index] === 'markedForReview'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+								<path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01.372-.568 6.787 6.787 0 011.955-3.38z" clip-rule="evenodd" />
 							</svg>
-							<svg
-								v-else
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								class="w-6 h-6"
-							>
-								<path
-									d="M12 15a3 3 0 100-6 3 3 0 000 6z"
-								/>
-								<path
-									fill-rule="evenodd"
-									d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z"
-									clip-rule="evenodd"
-								/>
+							<svg v-else-if="questionStatus[index] === 'answeredAndMarked'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+								<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+							</svg>
+							<svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+								<path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+								<path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd" />
 							</svg>
 							{{ index + 1 }}
 						</div>
@@ -210,7 +164,11 @@ export default {
 			this.questionStatus.splice(index, 1, status);
 		},
 		markForReview(index) {
-			this.updateQuestionStatus(index, 'markedForReview');
+			if (this.questionStatus[index] == 'answered'){
+				this.updateQuestionStatus(index, 'answeredAndMarked')
+			} else {
+				this.updateQuestionStatus(index, 'markedForReview');
+			}
 		},
 		answerQuestion(index) {
 			const questionId = this.test.questions[index].id;
@@ -222,14 +180,14 @@ export default {
 		},
 		navigateToQuestion(index) {
 			this.currentQuestionIndex = index;
+			if (this.questionStatus[index]=='unvisited'){
+				this.updateQuestionStatus(index, 'unanswered')
+			}
 		},
     nextQuestion() {
       // Move to the next question
       this.currentQuestionIndex++;
-
-			console.log('hehe')
 			if (!this.selectedOptions[this.currentQuestionIndex]) {
-				console.log('oho')
 				this.updateQuestionStatus(this.currentQuestionIndex, 'unanswered')
 			}
     },
