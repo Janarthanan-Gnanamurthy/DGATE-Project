@@ -76,6 +76,7 @@ export default {
   data() {
     return {
       selectedTopic: null,
+      topicTitle: null,
       selectedTest: null,
     };
   },
@@ -83,6 +84,7 @@ export default {
     toggleTopic(topic) {
       if (this.selectedTopic !== topic.id) {
         this.selectedTopic = topic.id;
+        this.topicTitle = topic.title;
         this.selectedTest = null; // Reset selectedTest when a new topic is selected
       }// } else {
       //   this.selectedTopic = null; // Close the dropdown if the same topic is clicked
@@ -90,11 +92,13 @@ export default {
     },
     selectTest(id) {
       this.selectedTest = id;
+      this.$store.commit('getTopic', this.topicTitle)
       this.Disclaimer(id);
     },
     showIntro() {
       this.selectedTest = null;
       this.selectedTopic = null;
+      this.topicTitle = null;
       this.showIntroduction();
     },
   },

@@ -9,9 +9,56 @@ import { RouterLink} from 'vue-router'
 		<div class="flex">
 			<CourseSidebar :course="course" :showIntroduction="showIntroduction" :Disclaimer="showtheDisclaimer" />
 			<transition name="" mode="out-in">
-				<p v-if="showIntro" class="p-5 text-2xl">
-					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quo dolorem molestiae facilis vero, nemo quis, ipsum eius numquam placeat voluptate repudiandae quos consectetur eaque doloribus labore. Atque hic, nisi totam voluptatum esse ducimus natus fuga blanditiis ad commodi illum minus tempore consequatur obcaecati necessitatibus ipsum. Culpa nemo nobis officia sequi mollitia modi impedit id laudantium dignissimos soluta? Iusto, est provident.
-				</p>
+				<div v-if="showIntro" class="container text-2xl p-20 flex flex-col items-center">
+					<div class="bg-white shadow-lg rounded-lg p-8">
+						<h2 class="text-4xl mb-14 text-center font-bold text-blue-600">Course Introduction</h2>
+						<div class="container mx-auto relative">
+							<div class="absolute -top-12 bg-blue-600 text-white px-4 py-2 rounded-t-lg">Course Overview</div>
+							<!-- <div class="absolute -top-12 right-0 px-4 py-2 rounded-t-lg">CourseID: [Course ID]</div> -->
+							<div class="bg-gray-100 p-6 rounded-lg mb-6">
+								<div class="flex justify-between mb-6">
+									<div>
+										<h3 class="text-xl font-semibold mb-2">Instructors:</h3>
+										<p class="text-gray-700">[Instructor 1 Name], [Instructor 2 Name]</p>
+									</div>
+									<div>
+										<h3 class="text-xl font-semibold mb-2">Duration:</h3>
+										<p class="text-gray-700">[Course Duration]</p>
+									</div>
+								</div>
+								<ul class="list-disc pl-5 text-gray-700 mb-6">
+									<li class="mb-2 flex items-center">
+										<svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+										</svg>
+										Master cutting-edge techniques and methodologies.
+									</li>
+									<li class="mb-2 flex items-center">
+										<svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+										</svg>
+										Develop a deep understanding of [Course Subject] principles.
+									</li>
+									<li class="mb-2 flex items-center">
+										<svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+										</svg>
+										Gain practical experience through real-world case studies.
+									</li>
+									<li class="mb-2 flex items-center">
+										<svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+										</svg>
+										Collaborate with a diverse community of learners.
+									</li>
+								</ul>
+								<h3 class="text-xl font-semibold mb-2">Prerequisites:</h3>
+								<p class="text-gray-700 mb-6">[List of Prerequisites]</p>
+							</div>
+							<p class="text-gray-600 mb-6 text-center">Unlock your full potential and elevate your career with our expertly crafted course. Enroll now and embark on an unforgettable learning experience!</p>
+						</div>
+					</div>
+				</div>
 			</transition>
 			<transition enter-active-class="animate__animated animate__slideInUp" leave-active-class="animate__animated animate__slideOutDown" >
 				<div v-if="showDisclaimer" class="container text-2xl p-20 flex flex-col items-center">
