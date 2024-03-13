@@ -26,12 +26,32 @@
             v-model="newCourseTitle"
             class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4"
           />
-
-          <label for="course-code" class="block text-xl font-semibold mb-2">Course Code:</label>
+          <label for="course-instructors" class="block text-xl font-semibold mb-2">Course code:</label>
           <input
-            id="course-code"
+            id="course-instructors"
             type="text"
             v-model="newCourseCode"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4"
+          />
+          <label for="course-pre" class="block text-xl font-semibold mb-2">Instructors:</label>
+          <input
+            id="course-pre"
+            type="text"
+            v-model=" newCourseInstructors"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4"
+          />
+          <label for="course-Duration" class="block text-xl font-semibold mb-2">Prerequisites:</label>
+          <input
+            id="course-Duration"
+            type="text"
+            v-model="newCoursePre"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4"
+          />
+          <label for="course-code" class="block text-xl font-semibold mb-2">Duration:</label>
+          <input
+            id="course-code"
+            type="number"
+            v-model="newCourseDuration"
             class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4"
           />
 
@@ -89,6 +109,9 @@ import { mapState } from 'vuex';
         selectedCourse: '',
         newCourseTitle: '',
         newCourseCode:'',
+        newCourseInstructors:'',
+        newCoursePre:'',
+        newCourseDuration:'',
         sheetNames: [],
         workbook: null,
         jsonData: null
@@ -167,7 +190,7 @@ import { mapState } from 'vuex';
         });
       },
       async addNewCourse(){
-        const Course = {title:this.newCourseTitle , code: this.newCourseCode}
+        const Course = {title:this.newCourseTitle , code: this.newCourseCode, instructors:this.newCourseInstructors, prerequisites:this.newCoursePre, duration: this.newCourseDuration }
         try{
           const response = await fetch(`http://localhost:8000/course`, {
           method: 'POST',

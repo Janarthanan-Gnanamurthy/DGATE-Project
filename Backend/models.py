@@ -21,6 +21,9 @@ class Course(Base):
     id = Column(Integer, primary_key=True)
     code = Column(String)
     title = Column(String)  
+    instructors = Column(String)
+    duration = Column(Integer)
+    prerequisites = Column(String)
     
     topics = relationship('Topics', back_populates='course')
 

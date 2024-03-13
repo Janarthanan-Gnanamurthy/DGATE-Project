@@ -34,7 +34,7 @@ async def root():
 
 @app.post("/course", response_model=CourseResponse)
 async def course(course: SchemaCourse):
-    new_course = Course(code=course.code, title=course.title)
+    new_course = Course(**course.dict())
     db.session.add(new_course)
     db.session.commit()
 
