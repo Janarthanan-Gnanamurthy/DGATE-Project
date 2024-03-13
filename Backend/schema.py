@@ -17,6 +17,9 @@ class UserResponse(UserCreate):
 class Course(BaseModel):
     code: str
     title: str
+    instructors: Optional[str] = 'Not Yet Updated'
+    duration: Optional[int] = 0
+    prerequisites: Optional[str] = 'Not Yet Updated'
 
     class Config:
         orm_mode = True

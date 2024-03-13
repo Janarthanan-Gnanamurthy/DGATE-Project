@@ -8,7 +8,7 @@ import { RouterLink} from 'vue-router'
 		<nav class="navbar bg-indigo-800 font-bold text-2xl text-white pl-5">{{ course.title }}</nav>
 		<div class="flex">
 			<CourseSidebar :course="course" :showIntroduction="showIntroduction" :Disclaimer="showtheDisclaimer" />
-			<transition name="" mode="out-in">
+			<transition enter-active-class="animate__animated animate__slideInDown" leave-active-class="animate__animated animate__slideOutUp">
 				<div v-if="showIntro" class="container text-2xl p-20 flex flex-col items-center">
 					<div class="bg-white shadow-lg rounded-lg p-8">
 						<h2 class="text-4xl mb-14 text-center font-bold text-blue-600">Course Introduction</h2>
@@ -19,11 +19,11 @@ import { RouterLink} from 'vue-router'
 								<div class="flex justify-between mb-6">
 									<div>
 										<h3 class="text-xl font-semibold mb-2">Instructors:</h3>
-										<p class="text-gray-700">[Instructor 1 Name], [Instructor 2 Name]</p>
+										<p class="text-gray-700">{{ course.instructors }}</p>
 									</div>
 									<div>
 										<h3 class="text-xl font-semibold mb-2">Duration:</h3>
-										<p class="text-gray-700">[Course Duration]</p>
+										<p class="text-gray-700">{{ course.duration }} hours</p>
 									</div>
 								</div>
 								<ul class="list-disc pl-5 text-gray-700 mb-6">
@@ -37,7 +37,7 @@ import { RouterLink} from 'vue-router'
 										<svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
 										</svg>
-										Develop a deep understanding of [Course Subject] principles.
+										Develop a deep understanding of {{ course.title }} principles.
 									</li>
 									<li class="mb-2 flex items-center">
 										<svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -53,15 +53,15 @@ import { RouterLink} from 'vue-router'
 									</li>
 								</ul>
 								<h3 class="text-xl font-semibold mb-2">Prerequisites:</h3>
-								<p class="text-gray-700 mb-6">[List of Prerequisites]</p>
+								<p class="text-gray-700 mb-6">{{ course.prerequisites }}</p>
 							</div>
 							<p class="text-gray-600 mb-6 text-center">Unlock your full potential and elevate your career with our expertly crafted course. Enroll now and embark on an unforgettable learning experience!</p>
 						</div>
 					</div>
 				</div>
 			</transition>
-			<transition enter-active-class="animate__animated animate__slideInUp" leave-active-class="animate__animated animate__slideOutDown" >
-				<div v-if="showDisclaimer" class="container text-2xl p-20 flex flex-col items-center">
+			<transition enter-active-class="animate__animated animate__slideInUp" leave-active-class="animate__animated animate__slideOutDown" mode="out-in">
+				<div v-if="showDisclaimer" key="disclaimer-{{ currentTest }}" class="container text-2xl p-20 flex flex-col items-center">
 					<div class="bg-white shadow-lg rounded-lg p-8 ">
 						<h2 class="text-4xl mb-20 text-center font-bold text-indigo-800">Disclaimer</h2>
 						<p class="text-2xl text-gray-600 mb-6 text-center"></p>
