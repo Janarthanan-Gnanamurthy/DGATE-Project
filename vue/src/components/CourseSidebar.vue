@@ -48,9 +48,9 @@
           :class="{ 'max-h-screen': selectedTopic === topic.id }"
         >
           <div
-            v-for="test in topic.test"
+            v-for="(test, testIndex) in topic.test"
             :key="test.id"
-            @click="selectTest(test.id)"
+            @click="selectTest(test.id, testIndex)"
             class="btn text-2xl bg-white border-0 m-0 w-full transition-all duration-300 relative"
             :class="{
               'bg-indigo-200 border-2 border-spacing-1 border-primary': selectedTest === test.id,
@@ -90,10 +90,10 @@ export default {
       //   this.selectedTopic = null; // Close the dropdown if the same topic is clicked
       // }
     },
-    selectTest(id) {
+    selectTest(id, testIndex) {
       this.selectedTest = id;
       this.$store.commit('getTopic', this.topicTitle)
-      this.Disclaimer(id);
+      this.Disclaimer(id, testIndex);
     },
     showIntro() {
       this.selectedTest = null;

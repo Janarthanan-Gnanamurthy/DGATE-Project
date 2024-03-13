@@ -8,7 +8,7 @@ import { RouterLink} from 'vue-router'
 		<nav class="navbar bg-indigo-800 font-bold text-2xl text-white pl-5">{{ course.title }}</nav>
 		<div class="flex">
 			<CourseSidebar :course="course" :showIntroduction="showIntroduction" :Disclaimer="showtheDisclaimer" />
-			<transition enter-active-class="animate__animated animate__slideInDown" leave-active-class="animate__animated animate__slideOutUp">
+			<transition enter-active-class="animate__animated animate__slideInDown" leave-active-class="animate__animated animate__slideOutUp" appear>
 				<div v-if="showIntro" class="container text-2xl p-20 flex flex-col items-center">
 					<div class="bg-white shadow-lg rounded-lg p-8">
 						<h2 class="text-4xl mb-14 text-center font-bold text-blue-600">Course Introduction</h2>
@@ -60,16 +60,15 @@ import { RouterLink} from 'vue-router'
 					</div>
 				</div>
 			</transition>
-			<transition enter-active-class="animate__animated animate__slideInUp" leave-active-class="animate__animated animate__slideOutDown" mode="out-in">
-				<div v-if="showDisclaimer" key="disclaimer-{{ currentTest }}" class="container text-2xl p-20 flex flex-col items-center">
+			<transition enter-active-class="animate__animated animate__slideInUp" leave-active-class="animate__animated animate__slideOutDown">
+				<div v-if="showDisclaimer" :key="currentTest" class="container ml-96 text-2xl p-20 flex flex-col items-center absolute">
 					<div class="bg-white shadow-lg rounded-lg p-8 ">
 						<h2 class="text-4xl mb-20 text-center font-bold text-indigo-800">Disclaimer</h2>
-						<p class="text-2xl text-gray-600 mb-6 text-center"></p>
+						<p class="text-2xl text-gray-600 mb-6 text-center"></p>	
 						<div class="container mx-auto relative">
 							<div class="absolute -top-12 bg-indigo-600 text-white px-4 py-2 rounded-t-lg">Terms & Conditions</div>
 							<div class="absolute -top-12 right-0 px-4 py-2 rounded-t-lg">TestID: {{ currentTest }}</div>
 							<div class="bg-gray-100 p-6 rounded-lg mb-6">
-								
 								<ul class="list-disc pl-5 text-gray-700">
 									<li class="mb-2 flex items-center">
 										<svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -138,6 +137,12 @@ export default {
 			currentTopic: 0,
 			score: null,
 			currentTest: null,
+			currentTestIndex: null
+		}
+	},
+	computed: {
+		leaveActiveClass() {
+			return this.getLeaveActiveClass();
 		}
 	},
 	methods: {
@@ -147,10 +152,11 @@ export default {
 			this.showDisclaimer=false;
 			this.showIntro=true;
 		},
-		showtheDisclaimer(id){
+		showtheDisclaimer(id, index){
 			this.currentTest=id
 			this.showIntro=false
 			this.showDisclaimer =true
+			this.currentTestIndex = index;
 		},
 		async redirect() {
 			try {
@@ -165,8 +171,24 @@ export default {
 			} catch (error) {
 				console.error('Error in redirect method:', error);
 			}
-		}
+		},
+		getLeaveActiveClass() {
+			if (this.currentTestIndex === null) {
+				// If there's no current test index, use a default animation
+				return 'animate__animated animate__slideOutUp';
+			}
+			const newTestIndex = this.currentTestIndex; // Assuming you can access the new test's index from the event object
+			const isNewTestBelow = newTestIndex > this.currentTestIndex;
+			return isNewTestBelow ? 'animate__animated animate__slideOutDown' : 'animate__animated animate__slideOutUp'; // Slide down if the new test is above
+		},
 	}
 }
 
 </script>
+
+<style scoped>
+
+.enter-active, .leave-active {
+	position: absolute;
+}
+</style>
