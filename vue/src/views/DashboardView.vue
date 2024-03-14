@@ -3,10 +3,18 @@ import Sidebar from '../components/Sidebar.vue'
 </script>
 
 <template>
-  <main class="flex bg-gray-100 min-h-screen">
+  <main class="flex bg-gray-100 min-h-screen relative">
     <!-- Adjust the Sidebar component as needed -->
     <Sidebar />
-    <div class="bg-white rounded-lg shadow-md p-6 w-full">
+
+    <div class="bg-white rounded-lg shadow-md w-full">
+      <div class="absolute overflow-y-auto w-full">
+        <div class="flex items-center justify-center min-h-screen bg-black bg-opacity-50">
+          <div class="text-2xl text-white">
+            <img width="32" height="32" src="https://img.icons8.com/windows/32/sad.png" alt="sad"/> Under Progress... 
+          </div>
+        </div>
+      </div>
       <h2 class="text-xl font-bold mb-4">My Progress</h2>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -39,7 +47,9 @@ import Sidebar from '../components/Sidebar.vue'
           <p class="mt-2 text-gray-600">{{ course.progress }}% Complete</p>
         </div>
       </div>
+
     </div>
+
   </main>
 
 
