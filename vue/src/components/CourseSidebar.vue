@@ -1,5 +1,5 @@
 <template>
-  <div class="menu bg-primary-content min-w-96 h-screen pt-8 p-0">
+  <div class="menu bg-primary-content w-96   pt-8 p-0">
     <ul>
       <li
         class="btn btn-primary text-2xl border-0 mb-0.5 w-full"

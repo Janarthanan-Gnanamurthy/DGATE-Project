@@ -18,8 +18,8 @@ import { RouterLink} from 'vue-router'
 							<div class="bg-gray-100 p-6 rounded-lg mb-6">
 								<div class="flex justify-between mb-6">
 									<div>
-										<h3 class="text-xl font-semibold mb-2">Instructors:</h3>
-										<p class="text-gray-700">{{ course.instructors }}</p>
+										<h3 class="text-xl font-semibold mb-2">Prerequisites:</h3>
+										<p class="text-gray-700 mb-6">{{ course.prerequisites }}</p>
 									</div>
 									<div>
 										<h3 class="text-xl font-semibold mb-2">Duration:</h3>
@@ -52,8 +52,8 @@ import { RouterLink} from 'vue-router'
 										Collaborate with a diverse community of learners.
 									</li>
 								</ul>
-								<h3 class="text-xl font-semibold mb-2">Prerequisites:</h3>
-								<p class="text-gray-700 mb-6">{{ course.prerequisites }}</p>
+								<h3 class="text-xl font-semibold mb-2">Instructors:</h3>
+								<p class="text-gray-700">{{ course.instructors }}</p>
 							</div>
 							<p class="text-gray-600 mb-6 text-center">Unlock your full potential and elevate your career with our expertly crafted course. Enroll now and embark on an unforgettable learning experience!</p>
 						</div>
