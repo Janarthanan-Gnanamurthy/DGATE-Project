@@ -3,19 +3,22 @@ import Sidebar from '../components/Sidebar.vue'
 </script>
 
 <template>
-  <main class="flex min-h-screen bg-base-200">
+  <main class="flex min-h-screen bg-gradient-to-br from-primary to-secondary">
     <Sidebar />
     <div class="container mx-auto px-4 py-8 flex-1">
-      <h1 class="text-3xl font-bold mb-8 text-center text-primary">Progress Report</h1>
+      <h1 class="text-4xl font-bold mb-8 text-center text-white">Progress Report</h1>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Course Progress -->
-        <div class="card bg-base-100 shadow-xl">
+        <div class="card bg-base-100 shadow-xl rounded-2xl">
+          <figure class="px-10 pt-10">
+            <img src="../assets/course-progress.svg" alt="Course Progress" class="rounded-xl" />
+          </figure>
           <div class="card-body">
-            <h2 class="card-title">Course Progress</h2>
+            <h2 class="card-title text-primary">Course Progress</h2>
             <div v-for="course in courses" :key="course.id" class="text-sm">
-              <p>{{ course.title }}</p>
+              <p class="font-semibold">{{ course.title }}</p>
               <progress
-                class="progress progress-primary w-full"
+                class="progress progress-primary w-full mb-4"
                 :value="calculateCourseProgress(course)"
                 max="100"
               >
@@ -24,10 +27,37 @@ import Sidebar from '../components/Sidebar.vue'
             </div>
           </div>
         </div>
-        <!-- Topic Progress -->
-        <div v-if="course && course.topics" class="card bg-base-100 shadow-xl">
+
+        <!-- Test Results -->
+        <div class="card bg-base-100 shadow-xl rounded-2xl h-2/3 overflow-auto">
+          <figure class="px-10 pt-10">
+            <img src="../assets/test-results.svg" alt="Test Results" class="rounded-xl" />
+          </figure>
           <div class="card-body">
-            <h2 class="card-title">Topic Progress</h2>
+            <h2 class="card-title text-success">Test Results</h2>
+            <div v-if="results && results.length > 0" class="text-sm">
+              <div v-for="result in results" :key="result.id" class="mb-4">
+                <p class="font-semibold">Test: {{ result.test_id }}</p>
+                <progress
+                  class="progress progress-success w-full"
+                  :value="result.score"
+                  max="100"
+                >
+                  {{ result.score }}%
+                </progress>
+              </div>
+            </div>
+            <p v-else class="text-sm">No test results available</p>
+          </div>
+        </div>
+
+        <!-- Topic Progress -->
+        <div v-if="course && course.topics" class="card bg-base-100 shadow-xl rounded-2xl">
+          <figure class="px-10 pt-10">
+            <img src="../assets/topic-progress.svg" alt="Topic Progress" class="rounded-xl" />
+          </figure>
+          <div class="card-body">
+            <h2 class="card-title text-info">Topic Progress</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div v-for="topic in course.topics" :key="topic.id" class="text-sm">
                 <p class="font-semibold">{{ topic.title }}</p>
@@ -42,27 +72,6 @@ import Sidebar from '../components/Sidebar.vue'
             </div>
           </div>
         </div>
-
-        <!-- Test Results -->
-        <div class="card bg-base-100 shadow-xl h-2/3 overflow-auto">
-          <div class="card-body">
-            <h2 class="card-title">Test Results</h2>
-            <div v-if="results && results.length > 0" class="text-sm">
-              <div v-for="result in results" :key="result.id" class="mb-4">
-                <p>Test: {{ result.test_id }}</p>
-                <progress
-                  class="progress progress-success w-full"
-                  :value="result.score"
-                  max="100"
-                >
-                  {{ result.score }}%
-                </progress>
-              </div>
-            </div>
-            <p v-else class="text-sm">No test results available</p>
-          </div>
-        </div>
-
       </div>
     </div>
   </main>
