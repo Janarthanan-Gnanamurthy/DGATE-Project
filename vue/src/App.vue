@@ -31,7 +31,16 @@ export default {
   methods: {
     token() {
       console.log(keycloak.token)
-    } 
+      this.testKeycloak()
+    },
+    testKeycloak(){
+      fetch('http://localhost:8000/protected',{
+        method: "GET",
+        headers: {
+        Authorization: `Bearer ${keycloak.token}`,
+      }
+      })
+    }
   },
   beforeCreate(){
     this.$store.dispatch('getCourses')

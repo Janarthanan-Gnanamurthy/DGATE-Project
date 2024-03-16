@@ -1,8 +1,10 @@
-from fastapi import FastAPI, Depends, Form, Request
+from fastapi import FastAPI, Depends, Form, Request, HTTPException, status, Header
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 from fastapi.middleware.cors import CORSMiddleware
 
 from typing import List
+
+from routers import auth
 
 from schema import Course as SchemaCourse,CourseResponse , Topics as SchemaTopics, Questions as SchemaQuestions, CourseWithTopics, TopicsWithTests, TopicResponse,TopicCreate, ResultsCreate, ResultsResponse, ResultsList,UserCreate, UserResponse, TestCreate, TestResponse, SelectQuestions
 from models import Course, Topics, Questions, Results, User, Test
@@ -10,9 +12,9 @@ from models import Course, Topics, Questions, Results, User, Test
 import os
 from dotenv import load_dotenv
 
-from keycloak import KeycloakOpenID
-from starlette.requests import Request
-from starlette.status import HTTP_403_FORBIDDEN
+from fastapi.security import OAuth2PasswordBearer, OAuth2AuthorizationCodeBearer
+from keycloak import KeycloakOpenID  #
+from keycloak.exceptions import KeycloakGetError
 
 # Configure client
 keycloak_openid = KeycloakOpenID(server_url="http://localhost:8080/",
@@ -20,6 +22,8 @@ keycloak_openid = KeycloakOpenID(server_url="http://localhost:8080/",
                                  realm_name="Myrealm",
                                  client_secret_key="ELpqaD95xNSOVXnEfK9JR37RvWHxdKy5")
 
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=keycloak_openid.well_known()['token_endpoint'])
 
 load_dotenv('.env')
 
@@ -30,6 +34,8 @@ origins = [
     "http://localhost:5173",
 ]
 
+
+app.include_router(auth.router)
 app.add_middleware(DBSessionMiddleware, db_url=os.environ['DATABASE_URL'])
 app.add_middleware(
     CORSMiddleware,
@@ -39,12 +45,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-userinfo = keycloak_openid.userinfo('eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJEVFdoYi01V2tSQWNUeWZaNFFQRTJXVEF6WnVzVUdRTDFpTTFmLUNnN0ljIn0.eyJleHAiOjE3MTA1NjI5NzksImlhdCI6MTcxMDU2MjY3OSwiYXV0aF90aW1lIjoxNzEwNTYyNjc5LCJqdGkiOiJiZGI0ODcxMS0yOTIxLTQ4NWItOGYzNy0yNzE2NmVjODJhOTYiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL015cmVhbG0iLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiODM2Y2Q1ZTQtMTNlMy00NzdlLWFkNDItMTkwMDJhODk1ZGZlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoibXljbGllbnQiLCJub25jZSI6ImJkZDBlMGM4LWY0NDktNDc4OC04N2U4LTg0NzIzNzYzMWI5MSIsInNlc3Npb25fc3RhdGUiOiI0NjI0YmY3OC1lYjIxLTQ0MGYtYWM1My03MDk3ZDU2OTZmYzYiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTE3MyJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1teXJlYWxtIiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiIsIlN0dWRlbnQiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwic2lkIjoiNDYyNGJmNzgtZWIyMS00NDBmLWFjNTMtNzA5N2Q1Njk2ZmM2IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiQmFsYWppIGt1bWFyIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYmFsYWppIiwiZ2l2ZW5fbmFtZSI6IkJhbGFqaSIsImZhbWlseV9uYW1lIjoia3VtYXIiLCJlbWFpbCI6ImJhbGFqaUBtYWlsLmNvbSJ9.jX6Mn8JAb7bwgm9QQqVnKofgN8LOJsmNImL0LAwGqqpuxHsJREr2QAhPgdrFJA2LUZURtlJfpdxZx-NjHfVP0VPkyYAyQqhO1-Q_fw-WVlV0ZDjWMqsmDd1AG3xZa0F4E33P4WsB9U_sjX9nk3YEEpb6N05LxIYau9wcD257QkV-HsfK5gfsh3kCwnLQxrneJjjSp7t-NhjdlIzAMvzT-4_DjC0pP1OjtLFCjYBdpzMJ17C-71hOp7u9DvS9kJyIsyP0BF2iZv_Uy-xzApqO9X0Wf8h62Kzj-y4LvcYHJtX_uW8ty8j-1b22hkOYXL7vVOI4QpvPkIkFN6Wh2k40zA')
-print(userinfo)
+
+# Helper function to validate and get user information from the token
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        token_info = keycloak_openid.introspect(token)
+        username = token_info['name']
+        
+        return token_info
+    except KeycloakGetError as e:
+        if e.response_code == 403:
+            raise HTTPException(
+                status_code=403, detail="Invalid authentication credentials")
+        else:
+            raise HTTPException(
+                status_code=500, detail="Error getting user information")
+
+@app.get("/protected")
+async def protected_route(user: dict = Depends(get_current_user)):
+    # return {"message": f"Hello, {user}!"}
+    return user
+
 
 @app.get("/")
-async def root():
-    return {"message": user}
+async def root(current_user: dict = Depends(get_current_user)):
+    username = current_user.get("preferred_username")
+    roles = current_user.get("realm_access", {}).get("roles", [])
+    return {"message": f"Welcome, {username}! You have the following roles: {roles}"}
 
 @app.post("/course", response_model=CourseResponse)
 async def course(course: SchemaCourse):

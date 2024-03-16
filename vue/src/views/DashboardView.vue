@@ -3,72 +3,74 @@ import Sidebar from '../components/Sidebar.vue'
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8 text-center">Progress Report</h1>
+  <main class="flex bg-gray-100 min-h-screen">
+    <Sidebar />
+    <div class="container mx-auto px-4 py-8">
+      <h1 class="text-3xl font-bold mb-8 text-center">Progress Report</h1>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- User Information -->
-      <div class="bg-base-200 rounded-lg p-6 shadow-md">
-        <h2 class="text-xl font-bold mb-4">User Information</h2>
-        <div class="text-sm">
-          <p>Name: {{ user.name }}</p>
-          <p>Email: {{ user.email }}</p>
-          <p>Department: {{ user.department }}</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- User Information -->
+        <div class="bg-base-200 rounded-lg p-6 shadow-md">
+          <h2 class="text-xl font-bold mb-4">User Information</h2>
+          <div class="text-sm">
+            <p>Name: {{ user.name }}</p>
+            <p>Email: {{ user.email }}</p>
+            <p>Department: {{ user.department }}</p>
+          </div>
         </div>
-      </div>
 
-      <!-- Course Progress -->
-      <div class="bg-base-200 rounded-lg p-6 shadow-md">
-        <h2 class="text-xl font-bold mb-4">Course Progress</h2>
-        <div v-if="course" class="text-sm">
-          <p>Course: {{ course.title }}</p>
-          <progress
-            class="progress progress-primary w-full"
-            :value="calculateCourseProgress(course)"
-            max="100"
-          >
-            {{ calculateCourseProgress(course) }}%
-          </progress>
-        </div>
-        <p v-else class="text-sm">No course selected</p>
-      </div>
-
-      <!-- Test Results -->
-      <div class="bg-base-200 rounded-lg p-6 shadow-md">
-        <h2 class="text-xl font-bold mb-4">Test Results</h2>
-        <div v-if="results && results.length > 0" class="text-sm">
-          <div v-for="result in results" :key="result.id" class="mb-4">
-            <p>Test: {{ result.test_id }}</p>
+        <!-- Course Progress -->
+        <div class="bg-base-200 rounded-lg p-6 shadow-md">
+          <h2 class="text-xl font-bold mb-4">Course Progress</h2>
+          <div v-for="course in courses" :key="course.id" class="text-sm">
+            <p>Course: {{ course.title }}</p>
             <progress
-              class="progress progress-success w-full"
-              :value="result.score"
+              class="progress progress-primary w-full"
+              :value="calculateCourseProgress(course)"
               max="100"
             >
-              {{ result.score }}%
+              {{ calculateCourseProgress(course) }}%
             </progress>
           </div>
         </div>
-        <p v-else class="text-sm">No test results available</p>
-      </div>
-    </div>
 
-    <!-- Topic Progress -->
-    <div v-if="course && course.topics" class="mt-8 bg-base-200 rounded-lg p-6 shadow-md">
-      <h2 class="text-xl font-bold mb-4">Topic Progress</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div v-for="topic in course.topics" :key="topic.id" class="text-sm">
-          <p class="font-semibold">{{ topic.title }}</p>
-          <progress
-            class="progress progress-info w-full"
-            :value="calculateTopicProgress(topic)"
-            max="100"
-          >
-            {{ calculateTopicProgress(topic) }}%
-          </progress>
+        <!-- Test Results -->
+        <div class="bg-base-200 rounded-lg p-6 shadow-md h-2/3 overflow-auto">
+          <h2 class="text-xl font-bold mb-4">Test Results</h2>
+          <div v-if="results && results.length > 0" class="text-sm">
+            <div v-for="result in results" :key="result.id" class="mb-4">
+              <p>Test: {{ result.test_id }}</p>
+              <progress
+                class="progress progress-success w-full"
+                :value="result.score"
+                max="100"
+              >
+                {{ result.score }}%
+              </progress>
+            </div>
+          </div>
+          <p v-else class="text-sm">No test results available</p>
+        </div>
+      </div>
+
+      <!-- Topic Progress -->
+      <div v-if="course && course.topics" class="mt-8 bg-base-200 rounded-lg p-6 shadow-md">
+        <h2 class="text-xl font-bold mb-4">Topic Progress</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div v-for="topic in course.topics" :key="topic.id" class="text-sm">
+            <p class="font-semibold">{{ topic.title }}</p>
+            <progress
+              class="progress progress-info w-full"
+              :value="calculateTopicProgress(topic)"
+              max="100"
+            >
+              {{ calculateTopicProgress(topic) }}%
+            </progress>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script>
@@ -79,6 +81,7 @@ export default {
     ...mapState([
       'user',
       'course',
+      'courses',
       'results',
     ]),
   },

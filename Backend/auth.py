@@ -29,8 +29,6 @@ def get_password_hash(password: str):
     """Return the hashed password."""
     return context.hash(password)
 
-print(get_password_hash('123456'))
-
 def get_user(username: str | None):
     """Return the user for given username."""
     user = db.session.query(User).filter(User.name == username).first()
@@ -48,5 +46,7 @@ def authenticate_user(username: str, password: str):
     if not verify_password(password, user.hashed_password):
         return False
     return user
+
+
 
 
