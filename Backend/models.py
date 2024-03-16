@@ -1,5 +1,5 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Float,Boolean, Table
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, ARRAY
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -11,7 +11,10 @@ class User(Base):
     name = Column(String, nullable=False )
     email = Column(String)
     number = Column(Integer, nullable=False, unique=True)
-    password = Column(String, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    full_name = Column(String, nullable=False)
+    roles = Column(ARRAY(String), nullable=False)
+
     department = Column(String)
 
     results = relationship('Results', back_populates='user')

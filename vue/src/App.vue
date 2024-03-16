@@ -9,7 +9,8 @@ import Sidebar from './components/Sidebar.vue'
 
     <nav class="navbar bg-primary p-5 justify-between">
       <RouterLink to="/" class="text-2xl font-bold text-white">Placement Module</RouterLink>
-      <button class="btn btn-primary" @click="keycloak.logout" >Log out</button>
+      <button class="btn btn-secondary" @click="token">token</button>
+      <button class="btn btn-secondary" @click="keycloak.logout" >Log out</button>
     </nav>
     <RouterView />
   </div>
@@ -28,7 +29,9 @@ export default {
     }
   },
   methods: {
-
+    token() {
+      console.log(keycloak.token)
+    } 
   },
   beforeCreate(){
     this.$store.dispatch('getCourses')
