@@ -5,18 +5,23 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
+# Define association table for many-to-many relationship between User and Test
+user_test_association = Table('user_test_association', Base.metadata,
+    Column('user_id', Integer, ForeignKey('user.id')),
+    Column('test_id', Integer, ForeignKey('test.id'))
+)
+
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False )
     email = Column(String)
-    number = Column(Integer, nullable=False, unique=True)
+    number = Column(String, nullable=False, unique=True)
     hashed_password = Column(String, nullable=False)
     full_name = Column(String, nullable=False)
     roles = Column(ARRAY(String), nullable=False)
 
     department = Column(String)
-
+    tests = relationship('Test', secondary=user_test_association, backref='users')
     results = relationship('Results', back_populates='user')
 
 class Course(Base):
