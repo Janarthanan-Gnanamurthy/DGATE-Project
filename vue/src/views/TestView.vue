@@ -21,7 +21,7 @@
 								<div class="border-2 border-gray-600 border-b-0 border-x-0 p-2 w-full rounded-t-md bg-slate-50">
 									<p class="mb-3">{{ test.questions[currentQuestionIndex].statement }}</p>
 									<img v-if="!test.questions[currentQuestionIndex].question_uri=='string'" :src="'/static/image/' + test.questions[currentQuestionIndex].question_uri" alt="Question {{ test.questions[currentQuestionIndex].id }}" width="500" class="p-3 mx-auto" />
-								</div>
+								</div>	
 								<div class="flex flex-col text-xl border-2 border-gray-600 border-b-0 border-x-0 p-3 rounded-b-md">
 									<label class="items-center mb-0.5">
 										<input type="radio" :name="test.questions[currentQuestionIndex].id" class="radio-xs" :value="test.questions[currentQuestionIndex].option_a" v-model="selectedOptions[test.questions[currentQuestionIndex].id]" required @change="answerQuestion(currentQuestionIndex)"/>
@@ -133,6 +133,8 @@
 </template>
 
 <script>
+import keycloak from '@/keycloak';
+
 export default {
 	data(){
 		return {
@@ -265,6 +267,7 @@ export default {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${keycloak.token}`
 					// Add other headers if needed
 				},
 				body: JSON.stringify(formdata)

@@ -1,14 +1,31 @@
-from fastapi import FastAPI, Depends, Form, Request
+from fastapi import FastAPI, Depends, Form, Request, HTTPException, status, Header
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 from fastapi.middleware.cors import CORSMiddleware
 
 from typing import List
+
+from routers import auth
 
 from schema import Course as SchemaCourse,CourseResponse , Topics as SchemaTopics, Questions as SchemaQuestions, CourseWithTopics, TopicsWithTests, TopicResponse,TopicCreate, ResultsCreate, ResultsResponse, ResultsList,UserCreate, UserResponse, TestCreate, TestResponse, SelectQuestions
 from models import Course, Topics, Questions, Results, User, Test
 
 import os
 from dotenv import load_dotenv
+
+from fastapi.security import OAuth2PasswordBearer, OAuth2AuthorizationCodeBearer
+from keycloak import KeycloakOpenID , KeycloakAdmin
+from keycloak.exceptions import KeycloakGetError
+from passlib.context import CryptContext
+
+
+# Configure client
+keycloak_openid = KeycloakOpenID(server_url="http://localhost:8080/",
+                                 client_id="fastapi",
+                                 realm_name="Myrealm",
+                                 client_secret_key="ELpqaD95xNSOVXnEfK9JR37RvWHxdKy5")
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=keycloak_openid.well_known()['token_endpoint'])
 
 load_dotenv('.env')
 
@@ -19,6 +36,8 @@ origins = [
     "http://localhost:5173",
 ]
 
+
+app.include_router(auth.router)
 app.add_middleware(DBSessionMiddleware, db_url=os.environ['DATABASE_URL'])
 app.add_middleware(
     CORSMiddleware,
@@ -28,9 +47,86 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Configure Keycloak admin client
+keycloak_admin = KeycloakAdmin(server_url="http://localhost:8080/",
+                               username="admin",
+                               password="admin",
+                               realm_name="Myrealm",
+                               user_realm_name="master")
+
+# Create a new user in the "Myrealm" real
+CRYPT_SCHEMES = os.getenv("CRYPT_SCHEMES", "bcrypt").split()
+context = CryptContext(schemes=CRYPT_SCHEMES, deprecated="auto")
+
+def verify_password(plain_password: str, hashed_password: str):
+    """Verify password with the hashed password."""
+    return context.verify(plain_password, hashed_password)
+
+
+def get_password_hash(password: str):
+    """Return the hashed password."""
+    return context.hash(password)
+
+def get_user(username: str | None):
+    """Return the user for given username."""
+    user = db.session.query(User).filter(User.full_name == username).first()
+
+    if user:
+        return user
+    return "User not found"      
+
+# Helper function to validate and get user information from the token
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        token_info = keycloak_openid.introspect(token)
+        username = token_info['given_name']
+        user = get_user(username)
+        return user
+    except KeycloakGetError as e:
+        if e.response_code == 403:
+            raise HTTPException(
+                status_code=403, detail="Invalid authentication credentials")
+        else:
+            raise HTTPException(
+                status_code=500, detail="Error getting user information")
+
+@app.get("/protected")
+async def protected_route(user: dict = Depends(get_current_user)):
+    # return {"message": f"Hello, {user}!"}
+    return user
+
+@app.post('/user', response_model=UserResponse, tags=['user'])
+def Create_user(user: UserCreate):
+    new_user = keycloak_admin.create_user({"email": user.email,
+                                       "username": user.full_name,
+                                       "enabled": True,
+                                       "firstName": user.full_name,
+                                       "credentials": [{"value": user.hashed_password, "type": "password"}],
+                                        "realmRoles": user.roles
+                                       }
+                                       )
+
+    user.hashed_password = get_password_hash(user.hashed_password)
+    user.number = str(user.number)
+    db_user = User(**user.dict())
+    db.session.add(db_user)
+    db.session.commit()
+
+    return db_user
+
+
+
+
+
+
 @app.get("/")
-async def root():
-    return {"message": "hello world"}
+async def root(current_user: dict = Depends(get_current_user)):
+    username = current_user.get("preferred_username")
+    roles = current_user.get("realm_access", {}).get("roles", [])
+    return {"message": f"Welcome, {username}! You have the following roles: {roles}"}
+
+
+
 
 @app.post("/course", response_model=CourseResponse)
 async def course(course: SchemaCourse):
@@ -79,10 +175,10 @@ def get_question(question_id: int):
     return question
 
 @app.post('/results', response_model=ResultsCreate)
-async def Create_results(request: Request):  #user_id: str = Form(...), topic_id: str = Form(...), score: float = Form(...), selected_options: dict = Form(...), metrics: dict = Form(...)
+async def Create_results(request: Request, user: dict = Depends(get_current_user)):  #user_id: str = Form(...), topic_id: str = Form(...), score: float = Form(...), selected_options: dict = Form(...), metrics: dict = Form(...)
     form_data = await request.json()
     db_results = Results(
-        user_id=form_data['user_id'],
+        user_id=user.id,
         test_id=form_data['test_id'],
         score=form_data['score'],
         selected_options=form_data['selected_options'],
@@ -99,21 +195,12 @@ async def Get_results(results_id: int):
         raise HTTPException(status_code=404, detail="Result Not Found")
     return result
 
-@app.get('/results/{user_id}', response_model=List[ResultsList])
-async def Get_results(user_id: int):
-    results = db.session.query(Results).filter(Results.user_id==user_id).all()
+@app.get('/loadresults', response_model=List[ResultsList])
+async def Get_results( user: dict = Depends(get_current_user)):
+    results = db.session.query(Results).filter(Results.user_id==user.id).all()
     if results is None:
         raise HTTPException(status_code=404, detail="Results Not Found")
     return results
-
-
-@app.post('/user', response_model=UserResponse)
-def Create_user(user: UserCreate):
-    db_user = User(**user.dict())
-    db.session.add(db_user)
-    db.session.commit()
-
-    return db_user
 
 @app.post('/test')
 async def Create_test(test_data: TestCreate):

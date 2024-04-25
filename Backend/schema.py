@@ -1,12 +1,14 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 class UserCreate(BaseModel):
-    name: str
-    email: Optional[str] = None
+    full_name: str
+    email: str
     number: int
-    password: str
+    hashed_password: str
+    roles: List[str] = Field(..., description="An array of user roles")
     department: Optional[str] = None
+
 
 class UserResponse(UserCreate):
     id: int

@@ -10,9 +10,6 @@ import Sidebar from '../components/Sidebar.vue'
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Course Progress -->
         <div class="card bg-base-100 shadow-xl rounded-2xl">
-          <figure class="px-10 pt-10">
-            <img src="../assets/course-progress.svg" alt="Course Progress" class="rounded-xl" />
-          </figure>
           <div class="card-body">
             <h2 class="card-title text-primary">Course Progress</h2>
             <div v-for="course in courses" :key="course.id" class="text-sm">
@@ -30,9 +27,6 @@ import Sidebar from '../components/Sidebar.vue'
 
         <!-- Test Results -->
         <div class="card bg-base-100 shadow-xl rounded-2xl h-2/3 overflow-auto">
-          <figure class="px-10 pt-10">
-            <img src="../assets/test-results.svg" alt="Test Results" class="rounded-xl" />
-          </figure>
           <div class="card-body">
             <h2 class="card-title text-success">Test Results</h2>
             <div v-if="results && results.length > 0" class="text-sm">
@@ -53,9 +47,6 @@ import Sidebar from '../components/Sidebar.vue'
 
         <!-- Topic Progress -->
         <div v-if="course && course.topics" class="card bg-base-100 shadow-xl rounded-2xl">
-          <figure class="px-10 pt-10">
-            <img src="../assets/topic-progress.svg" alt="Topic Progress" class="rounded-xl" />
-          </figure>
           <div class="card-body">
             <h2 class="card-title text-info">Topic Progress</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
