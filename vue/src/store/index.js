@@ -1,9 +1,10 @@
 import { createStore } from 'vuex'
+import keycloak from '../keycloak'
 
 const store = createStore({
 	state(){
 		return {
-			user: {id: 1, name: 'Balaji', email:'janagnana12@gmail.com', password:'123456', department:'MECH'},
+			user: {id:1},
 			courseId: null,
 			courses: null,
 			course: null,
@@ -135,7 +136,13 @@ const store = createStore({
 		},			
 		async getResults(context){
 			try{
-				const response = await fetch(`http://localhost:8000/results/${context.state.user.id}`)
+				console.log(keycloak.token)
+				const response = await fetch(`http://localhost:8000/loadresults`, {
+          method: "GET",
+          headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+        }
+        })
 				if (!response.ok){
 					throw new Error(`HTTP error! Status: ${response.status}`)
 				}

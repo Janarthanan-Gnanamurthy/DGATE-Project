@@ -175,10 +175,10 @@ def get_question(question_id: int):
     return question
 
 @app.post('/results', response_model=ResultsCreate)
-async def Create_results(request: Request):  #user_id: str = Form(...), topic_id: str = Form(...), score: float = Form(...), selected_options: dict = Form(...), metrics: dict = Form(...)
+async def Create_results(request: Request, user: dict = Depends(get_current_user)):  #user_id: str = Form(...), topic_id: str = Form(...), score: float = Form(...), selected_options: dict = Form(...), metrics: dict = Form(...)
     form_data = await request.json()
     db_results = Results(
-        user_id=form_data['user_id'],
+        user_id=user.id,
         test_id=form_data['test_id'],
         score=form_data['score'],
         selected_options=form_data['selected_options'],

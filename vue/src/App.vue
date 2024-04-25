@@ -33,13 +33,34 @@ export default {
       console.log(keycloak.token)
       this.testKeycloak()
     },
-    testKeycloak(){
-      fetch('http://localhost:8000/protected',{
-        method: "GET",
-        headers: {
-        Authorization: `Bearer ${keycloak.token}`,
-      }
-      })
+    async testKeycloak(){
+      try{
+				const response = await fetch('http://localhost:8000/protected',{
+          method: "GET",
+          headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+        }
+        })
+				if (!response.ok){
+					throw new Error(`HTTP error! Status: ${response.status}`)
+				}
+
+				const data = await response.json();
+				console.log('success', data);
+
+			}catch (error) {
+				console.error('Error fetching courses:', error);
+				alert('Error fetching User. Please try again.');
+			}
+
+
+
+      // response = await fetch('http://localhost:8000/protected',{
+      //   method: "GET",
+      //   headers: {
+      //   Authorization: `Bearer ${keycloak.token}`,
+      // }
+      // })
     }
   },
   beforeCreate(){
