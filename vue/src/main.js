@@ -9,7 +9,7 @@ import keycloak from './keycloak'
 const app = createApp(App)
 
 // Initialize Keycloak
-keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
+keycloak.init({ onLoad: 'check-sso' }).then(authenticated => {
   if (authenticated) {
     // Configure Vue Router with Keycloak
     router.beforeEach((to, from, next) => {
