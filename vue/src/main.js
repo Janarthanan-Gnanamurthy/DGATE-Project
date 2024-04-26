@@ -14,8 +14,9 @@ keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
     // Configure Vue Router with Keycloak
     router.beforeEach((to, from, next) => {
       if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (!keycloak.authenticated) {
-          next('/');
+        if (!keycloak.authenticated || !keycloak.token) { // Check for both authentication and token
+          // Redirect to custom login page (replace with your component path)
+          next('/login');
         } else {
           next();
         }
@@ -23,6 +24,7 @@ keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
         next();
       }
     });
+
 
     app.use(router)
     app.use(store)
