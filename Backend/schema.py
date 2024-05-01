@@ -85,7 +85,6 @@ class TestCreate(BaseModel):
 class TestID(BaseModel):
     id: int
     name: str
-    submitted: bool
 
 class TestResponse(BaseModel):
     id: int
