@@ -75,7 +75,6 @@ class Test(Base):
     id = Column(Integer, primary_key=True)
     topic_id = Column(Integer, ForeignKey('topics.id'), nullable=False)
     name = Column(String, nullable=False)
-    submitted = Column(Boolean, default=False)
     parameters = Column(JSONB)
 
     # Establishing relationships

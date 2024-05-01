@@ -31,6 +31,7 @@ export default {
   methods: {
     token() {
       console.log(keycloak.token)
+      console.log(keycloak.userInfo)
       this.testKeycloak()
     },
     async testKeycloak(){
